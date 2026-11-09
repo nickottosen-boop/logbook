@@ -71,6 +71,9 @@ label{font-size:14px;font-weight:600;color:var(--muted);display:block;margin-bot
 .ex-meta{font-size:13px;color:var(--muted);margin-top:2px}
 .sug{background:var(--surface-2);border-radius:var(--radius-s);padding:8px 10px;font-size:14px;margin:10px 0}
 .sug b{color:var(--accent)}
+.vid{display:inline-flex;align-items:center;gap:6px;margin-top:8px;font-size:14px;font-weight:650;color:var(--accent);text-decoration:none;min-height:32px}
+.vid:hover,.vid:focus-visible{text-decoration:underline}
+.vid.sm{font-size:13px;margin-top:0;min-height:0;font-weight:600}
 .sets{display:grid;grid-template-columns:28px 1fr 1fr 48px;gap:8px;align-items:center}
 .sets .n{font-weight:700;color:var(--muted);text-align:center}
 .sets .hdr{font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
@@ -87,7 +90,7 @@ label{font-size:14px;font-weight:600;color:var(--muted);display:block;margin-bot
 .checklist input{width:22px;min-height:22px;height:22px;margin-top:2px;accent-color:var(--pil)}
 .block-run{border-left:4px solid var(--run)} .block-pil{border-left:4px solid var(--pil)}
 nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--surface);background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:6px 8px calc(6px + env(safe-area-inset-bottom));display:flex;justify-content:center;z-index:5}
-nav.tabs .in{display:grid;grid-template-columns:repeat(5,1fr);max-width:560px;width:100%;gap:4px}
+nav.tabs .in{display:grid;grid-template-columns:repeat(6,1fr);max-width:560px;width:100%;gap:4px}
 nav.tabs button{border:none;background:transparent;font-size:12px;padding:6px 2px;min-height:52px;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted)}
 nav.tabs button svg{width:22px;height:22px}
 nav.tabs button.on{color:var(--accent)}
@@ -100,6 +103,7 @@ details>summary::-webkit-details-marker{display:none}
 .toast.show{opacity:1}
 .light-dot{width:12px;height:12px;border-radius:50%;display:inline-block}
 .big-num{font-family:var(--font-display);font-size:28px;font-weight:800;line-height:1}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -113,9 +117,9 @@ details>summary::-webkit-details-marker{display:none}
 const KEY = 'halumi-logbook-v1';
 const ORDER = ['A','B','C'];
 const SESSION_INFO = {
-  A:{name:'Legs & glutes + back', pil:'10–15 min', pilShort:true},
-  B:{name:'Upper body', pil:'5–10 min (or skip)', pilShort:true},
-  C:{name:'Full body + long Pilates', pil:'25–35 min', pilShort:false}
+  A:{name:'Legs & glutes + back', pil:'35–45 min'},
+  B:{name:'Upper body & arms', pil:'35–45 min'},
+  C:{name:'Full body & core', pil:'40–45 min'}
 };
 const o = (n, eq) => ({n, eq});
 // Option lists are ordered most → least back-friendly (research report 01). `def` = default option.
@@ -150,12 +154,12 @@ const SLOTS = {
       o('Lat pulldown, neutral or medium grip','machine'), o('Machine pulldown / high row (pad)','machine'), o('Single-arm cable pulldown, kneeling','cable'), o('Assisted pull-up machine','machine')]},
     {key:'B2', name:'Chest press', reps:[8,12], rest:'90 s after both', compound:true, def:0, group:'SS0', opts:[
       o('Machine chest press','machine'), o('Incline machine or Smith press (30°)','machine'), o('DB floor press','db'), o('DB bench press, flat or 30° (feet on bench if you arch)','db')]},
-    {key:'B3', ...ROW(1)},
+    {key:'B3', ...ROW(1), group:'SS1', rest:'– (superset)'},
     {key:'B4', name:'Shoulder press', reps:[8,12], rest:'90 s', compound:true, def:0, note:'Ribs down. Options 3–4 only after passing the overhead self-test.', opts:[
       o('Half-kneeling landmine press (one arm)','bar'), o('High-incline DB press (60–70°)','db'), o('Standing landmine press','bar'), o('Seated machine shoulder press (back on pad)','machine')]},
     {key:'B5a', name:'Rear delts', group:'SS1', reps:[12,20], rest:'– (superset)', compound:false, def:0, note:'Face pull: stand tall, don\'t lean back as it gets heavy.', opts:[
       o('Reverse pec-deck','machine'), o('Chest-supported rear-delt raise','db'), o('Face pull at face height','cable'), o('Band pull-apart','bw')]},
-    {key:'B5b', ...LAT(2), group:'SS1', rest:'60–90 s after both'},
+    {key:'B5b', ...LAT(2), group:'SS1', priority:true, rest:'60–90 s after both'},
     {key:'B6a', ...BICEPS(0), group:'SS2'},
     {key:'B6b', ...TRICEPS(1), group:'SS2'}
   ],
@@ -166,7 +170,7 @@ const SLOTS = {
       o('Lat pulldown, neutral grip','machine'), o('Machine high row (chest pad)','machine'), o('Single-arm cable pulldown','cable'), o('Straight-arm cable pulldown','cable')]},
     {key:'C3', name:'Incline press', reps:[8,12], rest:'90 s after both', compound:true, def:1, group:'SS0', opts:[
       o('Machine chest press','machine'), o('Incline machine press','machine'), o('DB incline press (30°)','db'), o('Incline push-up → floor push-up','bw')]},
-    {key:'C4', ...HIPTHRUST(2)},
+    {key:'C4', ...HIPTHRUST(2), group:'SS1', rest:'– (superset)'},
     {key:'C5a', ...LEGCURL(1), group:'SS1', rest:'– (superset)'},
     {key:'C5b', ...LAT(1), group:'SS1', priority:true, rest:'60–90 s after both'},
     {key:'C6', name:'Core', reps:[10,12], rest:'60 s', compound:false, core:true, def:1, unit:'reps/side or s', opts:[
@@ -207,7 +211,7 @@ const NOGYM = {
   B:[
     {key:'nB1', ...NG_PULL(0), group:'SS0', rest:'– (superset)'},
     {key:'nB2', ...NG_PUSH(1), group:'SS0', rest:'60–90 s after both'},
-    {key:'nB3', ...BANDROW(1)},
+    {key:'nB3', ...BANDROW(1), group:'SS1', rest:'– (superset)'},
     {key:'nB4', name:'Shoulder press', reps:[10,15], rest:'60–90 s', compound:true, def:0, note:'Press up and forward, ribs down. Never arch to finish.', opts:[
       o('Half-kneeling single-arm band press, up and forward','bw'), o('Seated backpack/bottle press, back against a wall','bw'),
       o('Incline pike push-up (hands on bed)','bw'), o('Standing band press, split stance','bw')]},
@@ -222,27 +226,117 @@ const NOGYM = {
       o('Wall sit (30–60 s)','bw'), o('Chair squat, tempo','bw'), o('Split squat holding a support','bw'), o('Step-up onto a stair or bench (knee height)','bw')]},
     {key:'nC2', ...NG_PULL(0), group:'SS0', rest:'– (superset)'},
     {key:'nC3', ...NG_PUSH(1), group:'SS0', rest:'60–90 s after both'},
-    {key:'nC4', ...NG_BRIDGE(2)},
+    {key:'nC4', ...NG_BRIDGE(2), group:'SS1', rest:'– (superset)'},
     {key:'nC5a', ...NG_HAM(1), group:'SS1', rest:'– (superset)'},
     {key:'nC5b', ...BANDLAT(2), group:'SS1', rest:'60–90 s after both'},
     {key:'nC6', name:'Core', reps:[10,12], rest:'60 s', compound:false, core:true, def:1, unit:'reps/side or s', opts:[
       o('Bird dog','bw'), o('Band Pallof press (door anchor), half-kneeling','bw'), o('Side plank (knees → feet)','bw'), o('Suitcase carry with a backpack, 20–30 m','bw')]}
   ]
 };
-const PILATES = {
-  1:['Breathing in neutral spine + small pelvic tilts · 1–2 min — alt: feet up on a chair / side-lying / seated tall',
-    'Knee folds / tabletop toe taps (head down) · 2×8/side — alt: arms-only dead bug / small marches / toe taps pressing hands into thighs',
-    'Leg slides · 2×8/side — alt: heel slides on a towel / bent-knee fall-outs / single-leg march',
-    'Glute bridge, no arch at top · 2×10 — alt: feet on a chair / ball between knees / 20 s hold',
-    'Side-lying clam + side-kick series · 2×12/side — alt: side-lying leg lift / banded clamshell / standing side leg lift',
-    'Quadruped arm reach, then leg reach · 2×6/side — alt: quadruped hover hold / arms only / legs only',
-    'Kneeling plank · 3×20 s — alt: incline plank / wall plank / dead bug hold',
-    'Side plank on knees · 2×20 s/side — alt: against a wall / side-lying leg-lift hold / half-kneeling Pallof press',
-    'Face-down small single-leg kicks · 2×10 — alt: face-down glute squeezes / standing kickback / bridge march',
-    'Single-leg circles, small · 5 each way/side — alt: bent-knee circles / knee circles, foot on floor / supine marching'],
-  2:['Modified Hundred (tabletop, head down) · 50–100 pumps','Dead bug, opposite arm/leg · 2×8/side','Single-leg bridge or bridge march · 2×8/side','Bird dog, 2–3 s hold · 2×6/side','Full plank / leg pull front with leg lifts · 3×20–30 s','Side plank on feet (or top-leg lift) · 2×20–30 s/side','Prone dart, chest hovers 1–2 cm, no arch · 2×8','Side-kick series, bigger range · 2×12/side','Reverse plank if hips stay level · 2×15–20 s']
+// Weights per session: the 4 key exercises. Older slots stay defined above so past sessions still display.
+const ACTIVE = {A:['A1','A2','A4','A5'], B:['B1','B2','B6a','B6b'], C:['C2','C3','C4','C5b']};
+const ACTIVE_NG = {A:['nA1','nA2','nA4','nA5'], B:['nB1','nB2','nB6a','nB6b'], C:['nC2','nC3','nC4','nC5b']};
+const PRIORITY = new Set(['A4','C2','C5b','nA4','nC2','nC5b']); // 4th set in the peak weeks
+const activeSlots = (type, noGym) => (noGym ? ACTIVE_NG : ACTIVE)[type].map(k => {
+  const slot = (noGym ? NOGYM : SLOTS)[type].find(x => x.key === k);
+  return {...slot, priority: PRIORITY.has(k)};
+});
+// Halumi's Pilates flows. Neutral spine throughout: no curl-ups, no twisting, no arching, no loaded forward bending.
+// Each move: l1 = [name, dose] (weeks 1–4), l2 = [name, dose] (from week 5, once Level 1 feels green),
+// alts = 3 alternatives, short = part of the short version (minimum sessions).
+const m = (l1, l2, alts, short = false) => ({l1, l2, alts, short});
+const FLOWS = {
+  A: {name:'Lower body & glutes', time:'35–45 min', props:'mini-band, small ball or ring', moves:[
+    m(['Breathing in neutral spine + small pelvic tilts','1–2 min'], ['Breathing in neutral spine + small pelvic tilts','1–2 min'],
+      ['Breathing with feet up on a chair','Side-lying breathing','Seated tall breathing']),
+    m(['Glute bridge with ball squeeze','2×12, 2 s squeeze at the top'], ['Single-leg glute bridge','2×8/side, no arch at the top'],
+      ['Glute bridge with feet on a chair','Glute bridge hold','Bridge march'], true),
+    m(['Banded glute bridge with knee opens','2×12 (band above knees)'], ['Banded glute bridge with knee opens','3×15, 2 s hold at the top, no arch'],
+      ['Seated band abduction','Banded lateral walk','Standing side leg lift holding a support']),
+    m(['Banded clamshell','2×15/side'], ['Side-lying clam with hips lifted','2×10/side'],
+      ['Clamshell without band','Side-lying leg lift','Banded lateral walk'], true),
+    m(['Side-lying leg lift series','2×12/side, small range, still pelvis'], ['Side-lying leg lift series with ankle band','2×12/side, small range, still pelvis'],
+      ['Standing side leg lift holding a support','Banded lateral walk','Standing cable abduction']),
+    m(['Side-lying inner thigh lift','2×12/side'], ['Side-lying inner thigh lift with small circles','2×12/side'],
+      ['Adductor ball squeeze lying on your back','Seated ring squeeze','Standing band adduction']),
+    m(['Quadruped glute kickback, knee bent, small range','2×10/side, no arching'], ['Banded quadruped glute kickback','2×12/side, stop with the thigh in line with your body, no arching'],
+      ['Standing kickback holding a support','Bridge march','Face-down small single-leg kicks'], true),
+    m(['Pilates squat with ball between knees, to a chair','2×12'], ['Pilates plié squat with a light dumbbell','2×12'],
+      ['Wall sit (30–60 s)','Chair or box squat, tempo','Split squat holding a support']),
+    m(['Leg slides','2×8/side'], ['Single-leg stretch with head down','2×8/side'],
+      ['Tabletop toe taps (head down)','Bent-knee fall-outs','Single-leg march']),
+    m(['Bridge heel walk-outs','2×6'], ['Ball or slider leg curl','2×8, hips level'],
+      ['Band leg curl, face-down (band on a bed leg)','Single-leg glute bridge hold','Towel or slider leg curl (hard floor)'], true),
+    m(['Side plank on knees with top-leg lift','2×20 s/side'], ['Side plank on feet','2×20–30 s/side'],
+      ['Side plank against a wall','Side-lying leg-lift hold','Half-kneeling Pallof press'], true),
+    m(['Lying figure-4 glute stretch + half-kneeling hip flexor stretch','30 s each side; tuck your pelvis in the hip flexor stretch'], ['Lying figure-4 glute stretch + half-kneeling hip flexor stretch','30–45 s each side; tuck your pelvis in the hip flexor stretch'],
+      ['Seated figure-4 stretch','Standing quad stretch holding a support','Lying hamstring stretch with a band'])
+  ]},
+  B: {name:'Upper body & arms', time:'30–40 min', props:'light dumbbells (1–3 kg), long band, ring', moves:[
+    m(['Breathing + lying arm floats, ribs down','1–2 min'], ['Breathing + lying arm floats, ribs down','1–2 min'],
+      ['Wall slides, ribs down','Seated arm floats','Side-lying breathing']),
+    m(['Pilates arm series: biceps curl, standing tall','2×12'], ['Pilates arm series: biceps curl, standing tall','3×12–15, heavier dumbbells'],
+      ['Band curl, standing tall','Seated DB / hammer curl, back supported','Band hammer curl'], true),
+    m(['Pilates arm series: side arm raise','2×12'], ['Pilates arm series: side arm raise','3×12–15'],
+      ['Band lateral raise, standing on the band, ribs down','Seated DB lateral raise (backrest)','Side-lying lateral raise (water bottle)'], true),
+    m(['Pilates arm series: hug a tree','2×12'], ['Pilates arm series: hug a tree with a band','3×12'],
+      ['Pilates ring chest press','Band chest press (band behind back)','Wall push-up']),
+    m(['Pilates arm series: chest expansion','2×12'], ['Pilates arm series: chest expansion','3×12, heavier dumbbells'],
+      ['Band pushdown (band high in a door)','Lying DB triceps extension','Close-grip incline push-up (hands on desk)'], true),
+    m(['Band pull-apart, arms at chest height','2×15'], ['Band pull-apart, arms at chest height','3×15, stronger band'],
+      ['Band face pull (door anchor)','Face-down T-raise lying on a bed (light)','Chest-supported rear-delt raise'], true),
+    m(['Door-anchored band row, half-kneeling','2×15'], ['Door-anchored band row, half-kneeling','3×15, stronger band'],
+      ['Seated band row (band round feet), sit tall','Single-arm door-anchored band row, split stance','Inverted row under a sturdy table, knees bent']),
+    m(['Incline push-up (hands on desk or bed)','2×8'], ['Knee push-up → floor push-up','2×8'],
+      ['Wall push-up','Pilates ring chest press','Band chest press (band behind back)']),
+    m(['Kneeling plank','3×20 s'], ['Plank with alternating leg lift','3×20–30 s'],
+      ['Incline plank (hands on a bench)','Wall plank','Dead bug hold'], true),
+    m(['Face-down W-T arm lift, forehead down','2×10, arms only, no back arch'], ['Face-down W-T arm lift, forehead down','2×10 holding 0.5–1 kg, forehead down, no back arch'],
+      ['Chest-supported rear-delt raise','Wall slides, ribs down','Band face pull (door anchor)']),
+    m(['Arms-only dead bug with ball','2×8/side'], ['Dead bug, opposite arm and leg, ball squeeze','2×8/side'],
+      ['Tabletop toe taps (head down)','Bird dog','Dead bug hold']),
+    m(['Doorway chest stretch + cross-body shoulder stretch','30 s each'], ['Doorway chest stretch + cross-body shoulder stretch','30–45 s each'],
+      ['Lying arm circles','Wall chest stretch','Neck side stretch'])
+  ]},
+  C: {name:'Full body & core', time:'40–45 min', props:'mat, small ball', moves:[
+    m(['Breathing in neutral spine + small pelvic tilts','1–2 min'], ['Breathing in neutral spine + small pelvic tilts','1–2 min'],
+      ['Breathing with feet up on a chair','Side-lying breathing','Seated tall breathing']),
+    m(['Knee folds / tabletop toe taps (head down)','2×8/side'], ['Modified Hundred (tabletop, head down)','50–100 pumps'],
+      ['Small marches lying on your back','Toe taps pressing hands into thighs','Leg slides'], true),
+    m(['Arms-only dead bug','2×8/side'], ['Dead bug, opposite arm and leg','2×8/side'],
+      ['Bird dog','Dead bug hold','Supine marching'], true),
+    m(['Bent-knee leg circles','5 each way/side'], ['Single-leg circles, small','5 each way/side'],
+      ['Bent-knee fall-outs','Supine marching','Leg slides']),
+    m(['Glute bridge, no arch at top','2×10'], ['Bridge march','2×8/side, hips level, no arch'],
+      ['Glute bridge with feet on a chair','Glute bridge hold','Glute bridge with ball squeeze'], true),
+    m(['Side-lying leg lift series','2×12/side, small range'], ['Side-kick series, bigger range','2×12/side, still pelvis, no arching on the back kick'],
+      ['Banded clamshell','Standing side leg lift holding a support','Banded lateral walk']),
+    m(['Quadruped arm reach, then leg reach','2×6/side'], ['Bird dog with a 2–3 s hold','2×6/side'],
+      ['Quadruped hover hold','Arms-only quadruped reach','Leg-only quadruped reach'], true),
+    m(['Kneeling plank','3×20 s'], ['Plank with alternating leg lift','3×20–30 s'],
+      ['Incline plank (hands on a bench)','Wall plank','Dead bug hold']),
+    m(['Side plank on knees','2×20 s/side'], ['Side plank on feet','2×20–30 s/side'],
+      ['Side plank against a wall','Side-lying leg-lift hold','Half-kneeling Pallof press'], true),
+    m(['Face-down small single-leg kicks','2×10'], ['Prone dart, chest hovers 1–2 cm','2×8, no lower-back arch'],
+      ['Face-down glute squeezes','Standing kickback holding a support','Bridge march']),
+    m(['Glute bridge hold','2×20 s'], ['Reverse plank','2×15–20 s, hips level, no sag or arch'],
+      ['Glute bridge with feet on a chair','Bridge march','Single-leg glute bridge hold']),
+    m(['Single-leg balance holding a support','30 s/side'], ['Single-leg balance with arm reach','30 s/side'],
+      ['Single-leg balance on a cushion','Standing march, slow','Heel-to-toe walk']),
+    m(['Lying hamstring stretch with a band + figure-4 glute stretch','30 s each side'], ['Lying hamstring stretch with a band + figure-4 glute stretch','30–45 s each side'],
+      ['Seated figure-4 stretch','Side-lying quad stretch','Standing calf stretch'])
+  ]}
 };
-const PIL_SHORT = {1:[1,3,5,6,7], 2:[1,2,3,4,5]};
+// How-to videos, keyed by exact exercise name. Anything missing falls back to a YouTube search.
+const VIDEOS = {"Assisted pull-up machine":{"u":"https://www.youtube.com/watch?v=wFj808u2HWU"},"Cable curl, standing tall, no leaning back":{"u":"https://www.youtube.com/watch?v=GNlopToAZyg"},"Cable pushdown, standing tall":{"u":"https://www.youtube.com/watch?v=8WL0m0vLAPo"},"Chest-supported T-bar row":{"u":"https://www.youtube.com/watch?v=CRpez9nWVH0"},"Chest-supported lateral raise (face-down, incline bench)":{"u":"https://www.youtube.com/watch?v=z3PRz2aVA10","n":"Short silent demo (RP exercise library); shows face-down on an incline bench."},"Chest-supported machine row":{"u":"https://www.youtube.com/watch?v=SC_Fg-fbzKQ"},"Chest-supported rear-delt raise":{"u":"https://www.youtube.com/watch?v=iCbVhDNpG-Y","n":"Uses a low prone bench; an incline bench works the same way."},"DB bench press, flat or 30° (feet on bench if you arch)":{"u":"https://www.youtube.com/watch?v=PtdfZ9eIB3g","n":"Physio-run channel; shows the feet-up/legs-raised version that keeps the lower back flat. Same press applies on a 30° bench."},"DB floor press":{"u":"https://www.youtube.com/watch?v=Bx4QPVH-J1g"},"DB incline press (30°)":{"u":"https://www.youtube.com/watch?v=IP4oeKh1Sd4","n":"Keep feet planted and back flat on the bench; avoid arching."},"Face pull at face height":{"u":"https://www.youtube.com/watch?v=0Po47vvj9g4"},"Half-kneeling landmine press (one arm)":{"u":"https://www.youtube.com/watch?v=fx6lSVNvu-4"},"High-incline DB press (60–70°)":{"u":"https://www.youtube.com/watch?v=GFYrRBoov3w","n":"Short silent demo (RP exercise library)."},"Incline machine or Smith press (30°)":{"u":"https://www.youtube.com/watch?v=EeLLZMdg6zI","n":"Shows the Smith-machine version."},"Incline machine press":{"u":"https://www.youtube.com/watch?v=VesHgJR14E8","n":"Plate-loaded incline press machine."},"Incline push-up → floor push-up":{"u":"https://www.youtube.com/watch?v=49jfZ_z7-us","n":"Covers the incline-to-floor progression."},"Incline-bench DB curl":{"u":"https://www.youtube.com/watch?v=HhHHBj3qTJ4"},"Incline-bench DB row (chest on 30–45° bench)":{"u":"https://www.youtube.com/watch?v=llFTFDwmGcw"},"Lat pulldown, neutral grip":{"u":"https://www.youtube.com/watch?v=aoHXhJ2x2BQ","n":"Keep the torso fairly upright — only a slight lean back."},"Lat pulldown, neutral or medium grip":{"u":"https://www.youtube.com/watch?v=AOpi-p0cJkc","n":"Beginner guide using a wide bar; apply the same form with a neutral or medium grip."},"Lying DB triceps extension":{"u":"https://www.youtube.com/watch?v=ir5PsbniVSc","n":"Lying DB extension on a bench (aka DB skull crusher). Keep the back flat on the bench, no arch."},"Machine chest press":{"u":"https://www.youtube.com/watch?v=sqNwDkUU_Ps"},"Machine high row (chest pad)":{"u":"https://www.youtube.com/watch?v=BY9IwdAcAZ4","n":"Very short demo on a Life Fitness chest-supported high row; low view count but exact match."},"Machine lateral raise":{"u":"https://www.youtube.com/watch?v=N7iyBxXATpo"},"Machine pulldown / high row (pad)":{"u":"https://www.youtube.com/watch?v=vjrEYyQ6EW0","n":"Shows a plate-loaded pulldown with thigh pad; any machine high row/pulldown with a pad is set up similarly."},"Preacher curl (machine or DB)":{"u":"https://www.youtube.com/watch?v=Ja6ZlIDONac","n":"Short silent demo of the machine version; the DB version uses the same arm position on the pad."},"Reverse pec-deck":{"u":"https://www.youtube.com/watch?v=v0rJuhEa59c"},"Seated DB / hammer curl, back supported":{"u":"https://www.youtube.com/watch?v=_1NdQoAFwJo","n":"Small channel but exact match (back-supported seated curl); for hammer curls just use a neutral, thumbs-up grip."},"Seated DB lateral raise (backrest)":{"u":"https://www.youtube.com/watch?v=oNTeBXvdIkM","n":"Shows a bench with a backrest."},"Seated cable row, sitting tall, no rocking":{"u":"https://www.youtube.com/watch?v=lJoozxC0Rns"},"Seated machine shoulder press (back on pad)":{"u":"https://www.youtube.com/watch?v=3R14MnZbcpw"},"Seated triceps machine / machine dip":{"u":"https://www.youtube.com/watch?v=Zg0tT27iYuY"},"Single-arm cable lateral raise, holding a support":{"u":"https://www.youtube.com/watch?v=gjXX8g-VPXI","n":"Shows the free hand holding the machine for support."},"Single-arm cable pulldown":{"u":"https://www.youtube.com/watch?v=HBC5s98wXko","n":"Seated at a lat-pulldown station with one handle."},"Single-arm cable pulldown, kneeling":{"u":"https://www.youtube.com/watch?v=H9pRHdfS5J4","n":"Half-kneeling version."},"Single-arm cable pushdown":{"u":"https://www.youtube.com/watch?v=RhkRr9eyOzQ"},"Standing landmine press":{"u":"https://www.youtube.com/watch?v=6cSTRPhpubs","n":"Uses a split stance, which helps avoid arching the lower back."},"Straight-arm cable pulldown":{"u":"https://www.youtube.com/watch?v=G9uNaXGTJ4w","n":"Short silent demo showing an upright torso (many other videos hinge far forward — stay tall like this one)."},"45° leg press, controlled depth":{"u":"https://www.youtube.com/watch?v=GutQSsdFxPE","n":"Physio-led setup, foot position and depth. Only go as deep as you can while your lower back and hips stay on the pad."},"Bird dog":{"u":"https://www.youtube.com/watch?v=ZdAHe9_HeEw","n":"25-second NASM demo: neutral spine, abs drawn in, slow limb raises."},"Glute bridge on the floor (DB on hips)":{"u":"https://www.youtube.com/watch?v=PSMW7iSi2BU","n":"Short guided demo for women. At the top, stop when hips are in line (squeeze glutes, ribs down) – don't arch the lower back."},"Goblet squat to a box":{"u":"https://www.youtube.com/watch?v=uzjfcTvgpoc","n":"15-second demo with a kettlebell; a dumbbell held at the chest works the same. Sit back to touch the box with control, don't drop onto it."},"Hack squat (back on the pad)":{"u":"https://www.youtube.com/watch?v=hglQExHCM9Q","n":"Cues keeping lower back and butt pressed into the pad – matches 'back on the pad'."},"Half-kneeling Pallof press":{"u":"https://www.youtube.com/watch?v=7JBR6JGE1hY","n":"15-second cable demo, no voiceover. Keep the torso tall and still; no twisting or leaning."},"Horizontal leg press":{"u":"https://www.youtube.com/watch?v=QQEW__B5y9I","n":"Beginner-friendly coaching tips. Same rule as the 45° press: don't let the lower back peel off the pad at the bottom."},"Leg extension":{"u":"https://www.youtube.com/watch?v=i1m7xGSpPbg","n":"Manufacturer how-to (Life Fitness): seat setup and movement. Machine layout may differ slightly from your gym's."},"Lying leg curl (hips down)":{"u":"https://www.youtube.com/watch?v=lUH80pneL5w","n":"NASM demo; cues bracing so the hips stay on the pad."},"Machine hip thrust":{"u":"https://www.youtube.com/shorts/JKg1ZrYW8W8","n":"Beginner setup on a Glute Drive-style machine, practised without weight first. Other brands vary. At the top, stop at hips level – no arching."},"Safety-bar squat or front squat":{"u":"https://www.youtube.com/watch?v=HPRpKD4oP4c","n":"20-second safety-squat-bar demo only (no front squat). Video says 'as deep as possible' – only go as deep as your spine stays neutral (stop before the pelvis tucks)."},"Seated leg curl":{"u":"https://www.youtube.com/watch?v=G5iP_YcDQdE","n":"25-second NASM demo of setup and controlled reps."},"Side plank (knees → feet)":{"u":"https://www.youtube.com/watch?v=VAPN4CmUWqk","n":"McGill Big 3 side bridge from a chiropractor, shown with knees bent (the starting version). Progress to straight legs/feet once that's easy."},"Single-leg hip thrust on a bench":{"u":"https://www.youtube.com/watch?v=b8lu0MK34uA","n":"13-second demo, no voiceover. Hips rise only to level with the thigh – no arching at the top."},"Single-leg leg press":{"u":"https://www.youtube.com/watch?v=FU7FqGTtCMk","n":"15-second demo, no voiceover. Light load; lower back stays on the pad."},"Single-leg seated leg curl":{"u":"https://www.youtube.com/watch?v=PXNJ71rksvU","n":"20-second NASM demo, single-leg version."},"Slider or ball leg curl":{"u":"https://www.youtube.com/watch?v=XkESHgkTdFw","n":"Swiss-ball version from a Nuffield Health PT. The slider version is the same movement with heels on sliders. Keep hips up and ribs down; don't arch."},"Smith or barbell hip thrust":{"u":"https://www.youtube.com/watch?v=ADgWjz9i42Y","n":"Smith-machine version with coaching on form. At lockout, stop at a straight line from shoulders to knees (chin tucked, ribs down) – no lower-back hyperextension."},"Smith squat, feet slightly forward":{"u":"https://www.youtube.com/watch?v=7REd90lDvEc","n":"24-second demo with Portuguese captions and description. Shows feet slightly ahead of the bar so the torso stays upright along the bar path."},"Suitcase carry (one DB, 20–30 m)":{"u":"https://www.youtube.com/watch?v=4y8EFpPn1rk","n":"30-second physio demo: brace, walk tall, no leaning toward the weight."},"Backpack goblet squat to a chair":{"u":"https://www.youtube.com/watch?v=c-VTTdWCYXM","n":"Shown with a kettlebell; hugging a backpack to the chest is the same movement. Sit back to the box/chair with a tall chest."},"Band Pallof press (door anchor), half-kneeling":{"u":"https://www.youtube.com/watch?v=0jyoqYm9avY","n":"Band anchored to a rig; a door anchor at chest height works the same."},"Band chest press (band behind back)":{"u":"https://www.youtube.com/shorts/DW6QyKt09Gw","n":"Standing, band wrapped around the upper back, no anchor."},"Band curl, standing tall":{"u":"https://www.youtube.com/watch?v=pXS-fSPWpk8"},"Band face pull (door anchor)":{"u":"https://www.youtube.com/shorts/Q77ORURfeYc","n":"Door-anchor version, as listed."},"Band hammer curl":{"u":"https://www.youtube.com/watch?v=PXmFD7vR3EY"},"Band lat pulldown, kneeling (band high in a door)":{"u":"https://www.youtube.com/shorts/NoC3exjbYGk","n":"Kneeling with band anchored high. Keep ribs down and don't lean back or arch."},"Band lateral raise, standing on the band, ribs down":{"u":"https://www.youtube.com/watch?v=yfNg5sFndbw","n":"Keep ribs down and avoid leaning or arching to lift the band."},"Band leg curl, face-down (band on a bed leg)":{"u":"https://www.youtube.com/watch?v=Yb6H3iJlo8g","n":"Band anchored low to a rig; a bed leg works the same. A pillow under the hips helps keep the lower back from arching."},"Band pull-apart":{"u":"https://www.youtube.com/shorts/SuvO4TBwSu4"},"Band pull-apart, arms at chest height":{"u":"https://www.youtube.com/watch?v=stwYTTPXubo","n":"Standard pull-apart with arms at chest height."},"Band pushdown (band high in a door)":{"u":"https://www.youtube.com/shorts/DmwcpEtAxK0","n":"Door-anchor version, as listed."},"Band straight-arm pulldown":{"u":"https://www.youtube.com/shorts/5pCotNbVsY4","n":"Band anchored high on a rig; a door anchor works the same. Stay tall with only a slight forward lean and keep ribs down."},"Bridge heel walk-outs":{"u":"https://www.youtube.com/watch?v=PtAEesSYE1A","n":"Physio demo. Take small steps out and stop before the back starts to arch or the hamstrings cramp."},"Bridge march":{"u":"https://www.youtube.com/watch?v=dVjj5RMCg4Y"},"Chair or box squat, tempo":{"u":"https://www.youtube.com/shorts/5Wd4S29E-yE","n":"Bodyweight squat to a chair. For tempo, lower slowly over about 3 seconds; the video shows a normal pace."},"Chair squat, tempo":{"u":"https://www.youtube.com/watch?v=GIz1C3yfE1s","n":"Physio demo of a chair squat. For tempo, lower slowly over about 3 seconds."},"Close-grip incline push-up (hands on desk)":{"u":"https://www.youtube.com/watch?v=XARFPzMnEJU","n":"Hands on a box; a desk works the same."},"Door-anchored band row, half-kneeling":{"u":"https://www.youtube.com/watch?v=Ccez11_8hnU","n":"Band anchored to a rig at chest height; a door anchor works the same."},"Face-down T-raise lying on a bed (light)":{"u":"https://www.youtube.com/watch?v=DQOdVlhZQAk","n":"Shown on the floor with the forehead down. On a bed, use the same movement with light or no weight and don't lift the chest."},"Glute bridge, band above knees":{"u":"https://www.youtube.com/watch?v=eT4_uBJ0mc8"},"Half-kneeling single-arm band press, up and forward":{"u":"https://www.youtube.com/watch?v=kRFOpDLImQ8","n":"Band anchored under the back knee, pressing up and forward like a landmine press. Needs no door."},"Incline pike push-up (hands on bed)":{"u":"https://www.youtube.com/shorts/H0Q69wwRzgY","n":"Hands on a bench; a bed works the same. Keep it easy on the back with no arching at the bottom."},"Incline push-up (hands on desk or bed)":{"u":"https://www.youtube.com/watch?v=Gvm5Q29UHbk","n":"Hands on a bench; a desk or bed works the same."},"Inverted row under a sturdy table, knees bent":{"u":"https://www.youtube.com/watch?v=vqvxgFgsq_g","n":"Table version with bent knees, exactly as listed. Test the table is heavy/stable first; keep a straight line knees-to-shoulders (no hip sag)."},"Knee push-up → floor push-up":{"u":"https://www.youtube.com/watch?v=WcHtt6zT3Go","n":"Mayo Clinic physio tips on knee push-ups; progress to floor push-ups once 3x10-12 knee reps feel easy. Keep ribs down so the lower back doesn't sag."},"Lying bottle triceps extension":{"u":"https://www.youtube.com/watch?v=2XDPNh7a8p8","n":"Shown with dumbbells on the floor; identical with water bottles. Keep knees bent, feet flat, so the lower back stays flat on the floor."},"Seated backpack/bottle press, back against a wall":{"u":"https://www.youtube.com/watch?v=kQwFufdQBkI","n":"Seated on a bench with back against a wall, as listed; use bottles/backpack instead of dumbbells. Don't arch away from the wall when pressing."},"Seated band row (band round feet), sit tall":{"u":"https://www.youtube.com/shorts/-NnZ7_DOXAk","n":"Band around feet, sitting tall. If your hamstrings are tight and you slump, bend the knees slightly or sit on a folded towel/cushion."},"Seated bottle or backpack curl, back supported":{"u":"https://www.youtube.com/watch?v=_1NdQoAFwJo","n":"Dumbbells on a back-supported bench; identical with bottles or a backpack held by the handle."},"Seated lateral raise with bottles, back against wall":{"u":"https://www.youtube.com/shorts/SgAoBdzYeqo","n":"Seated dumbbell version on a flat bench (no backrest); same movement with bottles, but sit with your back against a wall as listed."},"Side-lying lateral raise (water bottle)":{"u":"https://www.youtube.com/watch?v=AF-F6cKElJs","n":"Lying on the floor with a light dumbbell; identical with a water bottle. Head supported on the bottom arm."},"Single-arm band curl":{"u":"https://www.youtube.com/shorts/fgxczDtJQBc","n":"Physio channel. Stand on the band with one foot; keep elbow at the side and avoid leaning back."},"Single-arm band lateral raise":{"u":"https://www.youtube.com/watch?v=mQLKLbYqGBU","n":"Standing on the band; raise to shoulder height without leaning or shrugging."},"Single-arm band pulldown, kneeling":{"u":"https://www.youtube.com/shorts/nezVwFGSfrs","n":"Half-kneeling, band anchored high on a rig; at home use a door anchor at the top of the door. Keep ribs down, no arching."},"Single-arm band pushdown":{"u":"https://www.youtube.com/watch?v=mog-OHFsfSI","n":"Band anchored high (rig); identical with a door anchor at the top of the door."},"Single-arm band reverse fly":{"u":"https://www.youtube.com/shorts/38qVO0uQ23U","n":"Physio channel. Keep the torso still and upright; no twisting toward the working arm."},"Single-arm door-anchored band row, split stance":{"u":"https://www.youtube.com/shorts/Eumn6K91f6k","n":"Band attached to a rig at about chest height; same with a door anchor. Split stance, torso stays square (no rotation)."},"Single-leg glute bridge":{"u":"https://www.youtube.com/watch?v=VUl8R0kn6v4","n":"Lift hips only to a straight line shoulders-knees; don't arch the lower back at the top."},"Single-leg hip thrust, shoulders on sofa or bed":{"u":"https://www.youtube.com/shorts/D9Z8GpyNGi0","n":"Upper back on a couch, as listed. Short looping clip; finish with ribs down and a straight line (no lower-back arch)."},"Single-leg towel leg curl":{"u":"https://www.youtube.com/shorts/zH40nmPFC4k","n":"Girls Gone Strong (women's coaching). Hold hips level in the bridge; if the lower back works or arches, use both legs or go back to the two-leg version."},"Split squat holding a support":{"u":"https://www.youtube.com/watch?v=vUikQQsXCbg","n":"Physio channel; hand supported split squat as listed. Torso tall."},"Standing band press, split stance":{"u":"https://www.youtube.com/watch?v=aMXspgd84KA","n":"Band anchored behind at chest height (rig/post); same with a door anchor. Squeeze glutes so the lower back doesn't arch."},"Step-up onto a stair or bench (knee height)":{"u":"https://www.youtube.com/watch?v=Xwa7Jjy0XXY","n":"Knee-high bench step-ups, bodyweight and dumbbells; works the same on a stair or sturdy bench. Lean slightly forward from the hips, not the lower back."},"Suitcase carry with a backpack, 20–30 m":{"u":"https://www.youtube.com/watch?v=3RKKnZhhelE","n":"Kettlebell shown; identical carrying a backpack in one hand. Stay tall, don't lean toward or away from the load."},"Towel or slider leg curl (hard floor)":{"u":"https://www.youtube.com/watch?v=Beb0_rycJCU","n":"Towel on a hard floor, both legs, as listed. Keep the bridge height modest and ribs down; stop if the lower back takes over."},"Wall push-up":{"u":"https://www.youtube.com/watch?v=wIPJvBQs7RA","n":"Hinge Health physical therapists; easiest push-up step."},"Wall sit (30–60 s)":{"u":"https://www.youtube.com/watch?v=cWTZ8Am1Ee0","n":"Medbridge (physio platform); back flat against the wall, 30 s hold demo."},"Breathing in neutral spine + small pelvic tilts":{"u":"https://www.youtube.com/watch?v=ROttoItO67Q","n":"Keep the tilts small and finish each one back in neutral; ~5.7 min tutorial."},"feet up on a chair":{"u":"https://www.youtube.com/watch?v=dTE45OIo2TI","n":"90/90 breathing with calves supported; ignore any cue to flatten/tuck the back hard – stay neutral."},"side-lying":{"u":"https://www.youtube.com/watch?v=L_w83WWLwoc"},"seated tall":{"u":"https://www.youtube.com/watch?v=PdEKzbBFZrE","n":"Seated pelvic tilts – keep them small and end sitting tall in neutral."},"Knee folds / tabletop toe taps (head down)":{"u":"https://www.youtube.com/watch?v=V3HaBfw-_Bs","n":"Rehab My Patient (physio Pilates) – shows knee folds to tabletop then toe taps; head stays down."},"arms-only dead bug":{"u":"https://www.youtube.com/watch?v=UwQYnqfeIS4"},"small marches":{"u":"https://www.youtube.com/watch?v=edIk68IFF9o","n":"Single knee folds (level 1) = small supine marches, neutral pelvis."},"toe taps pressing hands into thighs":{"u":"https://www.youtube.com/watch?v=EXs-BtGc-ng","n":"Shows hands pressing into thighs in tabletop (isometric); add slow toe taps once steady. Keep head down."},"Leg slides":{"u":"https://www.youtube.com/watch?v=W8sr5cHLVPw","n":"Titled 'One leg stretch 1' but is the supine neutral-spine leg slide (not the classical curled-up version)."},"heel slides on a towel":{"u":"https://www.youtube.com/watch?v=lab6d_vBRjU","n":"Knee-rehab style heel slide; keep pelvis still and back neutral."},"bent-knee fall-outs":{"u":"https://www.youtube.com/watch?v=k3NuqvxwiFQ"},"single-leg march":{"u":"https://www.youtube.com/watch?v=4Xx3Ibpn83A"},"Glute bridge, no arch at top":{"u":"https://www.youtube.com/watch?v=fK_xUE3OKIE","n":"Lift as one unit (no rolling up through the spine) and stop before the back arches."},"feet on a chair":{"u":"https://www.youtube.com/watch?v=0P_48_p6OJA","n":"Short clip, no coaching; keep ribs down and don't arch at the top."},"ball between knees":{"u":"https://www.youtube.com/watch?v=-9SYWaxo4UE"},"20 s hold":{"u":"https://www.youtube.com/watch?v=vtnpY_fYJ4M","n":"Video says 30 s hold – use 20 s."},"Side-lying clam + side-kick series":{"u":"https://www.youtube.com/watch?v=_lvJCM1RYnA","n":"Shows the clam only. For the side-kick part use 'Pilates Side Kick part 1' by Rehab My Patient: https://www.youtube.com/watch?v=ZeSrzkpHi5c"},"side-lying leg lift":{"u":"https://www.youtube.com/watch?v=-rDiQXjeXO0"},"banded clamshell":{"u":"https://www.youtube.com/watch?v=4T2P_-MV9g0"},"standing side leg lift":{"u":"https://www.youtube.com/watch?v=qBqKuEQl9sI","n":"Stay tall; don't lean the trunk."},"Quadruped arm reach, then leg reach":{"u":"https://www.youtube.com/watch?v=WlqsDEab2RE","n":"Physio demo of arm and leg extensions in 4-point kneeling; do arm reaches and leg reaches separately at this level."},"quadruped hover hold":{"u":"https://www.youtube.com/watch?v=l0gCd0YWp5g","n":"Pilates 'Plank prep 1': knees hover ~1 inch with neutral spine."},"arms only":{"u":"https://www.youtube.com/watch?v=wz3N_VVe9nE"},"legs only":{"u":"https://www.youtube.com/watch?v=t6m8EGXZZMM","n":"Leg slides back along the floor from 4-point kneeling."},"Kneeling plank":{"u":"https://www.youtube.com/watch?v=UOXuHkBfDhU","n":"Forearms and knees; keep a straight line, no sag in the lower back."},"incline plank":{"u":"https://www.youtube.com/watch?v=NBlQeKqxasc"},"wall plank":{"u":"https://www.youtube.com/watch?v=3ZRCc_B-6H4"},"dead bug hold":{"u":"https://www.youtube.com/watch?v=VQG--xz0ElA","n":"Ignore the optional shoulder lift – keep the head down."},"Side plank on knees":{"u":"https://www.youtube.com/watch?v=UurF0EhHFLg"},"against a wall":{"u":"https://www.youtube.com/watch?v=9Zc1ysm6aAM"},"side-lying leg-lift hold":{"u":"https://www.youtube.com/watch?v=BLoG9gKfiPM","n":"Shows side-lying leg lifts; pause and hold at the top."},"half-kneeling Pallof press":{"u":"https://www.youtube.com/watch?v=BzjHSUIxP8U"},"Face-down small single-leg kicks":{"u":"https://www.youtube.com/watch?v=bVixsHetea8","n":"Forehead on hands, neutral spine (no chest lift) – the modified version."},"face-down glute squeezes":{"u":"https://www.youtube.com/watch?v=JxuSyMRQ8Nk"},"standing kickback":{"u":"https://www.youtube.com/watch?v=SWvnWGd0yQQ","n":"Small range – the leg moves, the lower back does not arch."},"bridge march":{"u":"https://www.youtube.com/watch?v=iZSKZ37MUu0","n":"Keep hips level; no arch."},"Single-leg circles, small":{"u":"https://www.youtube.com/watch?v=1uQw6bor1k8","n":"Straight-leg version with neutral pelvis; keep circles small (video is 2.5 min)."},"bent-knee circles":{"u":"https://www.youtube.com/watch?v=6Pqs0glgWzA"},"supine marching":{"u":"https://www.youtube.com/watch?v=IdjH6otDqvA"},"Modified Hundred (tabletop, head down)":{"u":"https://www.youtube.com/watch?v=0lg1vN7m-vE","n":"Rehab My Patient 'Hundreds 3': both legs in tabletop, head down, arm pulses. Don't progress to their level 4+ (head curl-up)."},"Dead bug, opposite arm/leg":{"u":"https://www.youtube.com/watch?v=DdUKPepLsTw","n":"Only lower as far as the back stays neutral."},"Single-leg bridge or bridge march":{"u":"https://www.youtube.com/watch?v=G107AsdCIYk"},"Bird dog, 2–3 s hold":{"u":"https://www.youtube.com/watch?v=xEDnlOxeJH4"},"Full plank / leg pull front with leg lifts":{"u":"https://www.youtube.com/watch?v=JHSolDIxxdk","n":"Pilates 'Prone leg pull 4': long plank with alternating leg lifts."},"Side plank on feet (or top-leg lift)":{"u":"https://www.youtube.com/watch?v=vQKLvMTYA9Q","n":"Forearm side plank on feet; no top-leg lift shown."},"Prone dart, chest hovers 1–2 cm, no arch":{"u":"https://www.youtube.com/watch?v=GeWKYPqV3A8","n":"Video keeps lower ribs on the floor – good; lift even less (1–2 cm only), no lower-back arch."},"Side-kick series, bigger range":{"u":"https://www.youtube.com/watch?v=vfos34Ov4gw","n":"Straight-leg side kick; keep the pelvis stacked and still as range increases."},"Reverse plank if hips stay level":{"u":"https://www.youtube.com/watch?v=PgezBeNqke0","n":"Stop if hips sag or the back arches."},"Breathing with feet up on a chair":{"u":"https://www.youtube.com/watch?v=dTE45OIo2TI","n":"90/90 breathing with calves supported; ignore any cue to flatten/tuck the back hard – stay neutral."},"Side-lying breathing":{"u":"https://www.youtube.com/watch?v=L_w83WWLwoc"},"Seated tall breathing":{"u":"https://www.youtube.com/watch?v=PdEKzbBFZrE","n":"Seated pelvic tilts – keep them small and end sitting tall in neutral."},"Glute bridge with ball squeeze":{"u":"https://www.youtube.com/watch?v=-9SYWaxo4UE"},"Glute bridge with feet on a chair":{"u":"https://www.youtube.com/watch?v=0P_48_p6OJA","n":"Short clip, no coaching; keep ribs down and don't arch at the top."},"Banded clamshell":{"u":"https://www.youtube.com/watch?v=4T2P_-MV9g0"},"Side-lying leg lift":{"u":"https://www.youtube.com/watch?v=-rDiQXjeXO0"},"Standing side leg lift holding a support":{"u":"https://www.youtube.com/watch?v=qBqKuEQl9sI","n":"Stay tall; don't lean the trunk."},"Standing kickback holding a support":{"u":"https://www.youtube.com/watch?v=SWvnWGd0yQQ","n":"Small range – the leg moves, the lower back does not arch."},"Tabletop toe taps (head down)":{"u":"https://www.youtube.com/watch?v=V3HaBfw-_Bs","n":"Rehab My Patient (physio Pilates) – shows knee folds to tabletop then toe taps; head stays down."},"Bent-knee fall-outs":{"u":"https://www.youtube.com/watch?v=k3NuqvxwiFQ"},"Single-leg march":{"u":"https://www.youtube.com/watch?v=4Xx3Ibpn83A"},"Side plank against a wall":{"u":"https://www.youtube.com/watch?v=9Zc1ysm6aAM"},"Side-lying leg-lift hold":{"u":"https://www.youtube.com/watch?v=BLoG9gKfiPM","n":"Shows side-lying leg lifts; pause and hold at the top."},"Incline plank (hands on a bench)":{"u":"https://www.youtube.com/watch?v=NBlQeKqxasc"},"Wall plank":{"u":"https://www.youtube.com/watch?v=3ZRCc_B-6H4"},"Dead bug hold":{"u":"https://www.youtube.com/watch?v=VQG--xz0ElA","n":"Ignore the optional shoulder lift – keep the head down."},"Arms-only dead bug":{"u":"https://www.youtube.com/watch?v=UwQYnqfeIS4"},"Small marches lying on your back":{"u":"https://www.youtube.com/watch?v=edIk68IFF9o","n":"Single knee folds (level 1) = small supine marches, neutral pelvis."},"Toe taps pressing hands into thighs":{"u":"https://www.youtube.com/watch?v=EXs-BtGc-ng","n":"Shows hands pressing into thighs in tabletop (isometric); add slow toe taps once steady. Keep head down."},"Bent-knee leg circles":{"u":"https://www.youtube.com/watch?v=6Pqs0glgWzA"},"Supine marching":{"u":"https://www.youtube.com/watch?v=IdjH6otDqvA"},"Quadruped hover hold":{"u":"https://www.youtube.com/watch?v=l0gCd0YWp5g","n":"Pilates 'Plank prep 1': knees hover ~1 inch with neutral spine."},"Arms-only quadruped reach":{"u":"https://www.youtube.com/watch?v=wz3N_VVe9nE"},"Leg-only quadruped reach":{"u":"https://www.youtube.com/watch?v=t6m8EGXZZMM","n":"Leg slides back along the floor from 4-point kneeling."},"Face-down glute squeezes":{"u":"https://www.youtube.com/watch?v=JxuSyMRQ8Nk"},"Glute bridge hold":{"u":"https://www.youtube.com/watch?v=vtnpY_fYJ4M","n":"Video says 30 s hold – use 20 s."},"Dead bug, opposite arm and leg":{"u":"https://www.youtube.com/watch?v=DdUKPepLsTw","n":"Only lower as far as the back stays neutral."},"Bird dog with a 2–3 s hold":{"u":"https://www.youtube.com/watch?v=xEDnlOxeJH4"},"Plank with alternating leg lift":{"u":"https://www.youtube.com/watch?v=JHSolDIxxdk","n":"Pilates 'Prone leg pull 4': long plank with alternating leg lifts."},"Side plank on feet":{"u":"https://www.youtube.com/watch?v=vQKLvMTYA9Q","n":"Forearm side plank on feet; no top-leg lift shown."},"Prone dart, chest hovers 1–2 cm":{"u":"https://www.youtube.com/watch?v=GeWKYPqV3A8","n":"Video keeps lower ribs on the floor – good; lift even less (1–2 cm only), no lower-back arch."},"Reverse plank":{"u":"https://www.youtube.com/watch?v=PgezBeNqke0","n":"Stop if hips sag or the back arches."},"Side-lying leg lift series":{"u":"https://www.youtube.com/watch?v=-rDiQXjeXO0"},"Clamshell without band":{"u":"https://www.youtube.com/watch?v=_lvJCM1RYnA","n":"Shows the clam only. For the side-kick part use 'Pilates Side Kick part 1' by Rehab My Patient: https://www.youtube.com/watch?v=ZeSrzkpHi5c"},"Side-lying leg lift series with ankle band":{"u":"https://www.youtube.com/watch?v=vfos34Ov4gw","n":"Straight-leg side kick; keep the pelvis stacked and still as range increases."},"Banded glute bridge with knee opens":{"u":"https://www.youtube.com/watch?v=iVptDu761SM","n":"Lift only to a straight line from knees to shoulders; keep your ribs down, no arch."},"Seated band abduction":{"u":"https://www.youtube.com/watch?v=YpqXcc8xCQs","n":"Sit tall and keep your back still as the knees open."},"Side-lying clam with hips lifted":{"u":"https://www.youtube.com/watch?v=xzTdb0DVs_E","n":"Stay on your knees and elbow; keep your hips stacked and lifted, no twisting."},"Banded lateral walk":{"u":"https://www.youtube.com/watch?v=6eoK_yxY8Ak","n":"Stay tall with a slight knee bend; don't lean forward or sway."},"Standing cable abduction":{"u":"https://www.youtube.com/watch?v=vSqhrbzZb7A","n":"Hold the machine, stand tall, and move only the leg; small range."},"Side-lying inner thigh lift":{"u":"https://www.youtube.com/watch?v=ybrWCB9zt9c","n":"Rest your head on your arm; lift the bottom leg slowly and keep your waist still."},"Side-lying inner thigh lift with small circles":{"u":"https://www.youtube.com/watch?v=uEGCBy1vbeg","n":"Keep the circles small and slow; rest your head on your arm and don't roll back."},"Adductor ball squeeze lying on your back":{"u":"https://www.youtube.com/watch?v=vF4Q-pQUQRo","n":"Keep your back neutral on the mat; squeeze gently and breathe."},"Seated ring squeeze":{"u":"https://www.youtube.com/watch?v=7Zuho35JwCA","n":"Sit tall on a chair with the ring between your knees; don't slump."},"Standing band adduction":{"u":"https://www.youtube.com/watch?v=Vce3tIYpzhc","n":"Hold a support and stand tall; move only the leg."},"Quadruped glute kickback, knee bent, small range":{"u":"https://www.youtube.com/watch?v=dHecZtA-ngM","n":"Lift only until your thigh is level with your back; no arch, pelvis still."},"Banded quadruped glute kickback":{"u":"https://www.youtube.com/watch?v=BRTi1z70e3o","n":"Same rule: thigh to back level only, ribs and pelvis still, no arch."},"Pilates squat with ball between knees, to a chair":{"u":"https://www.youtube.com/watch?v=IqigrlvwUGo","n":"Hinge slightly with a long back, tap the chair lightly, squeeze the ball as you stand."},"Pilates plié squat with a light dumbbell":{"u":"https://www.youtube.com/watch?v=hXlbCqgMNg8","n":"Keep your torso upright and the weight light; don't lean forward."},"Single-leg stretch with head down":{"u":"https://www.youtube.com/watch?v=f55crarNcGs","n":"Keep your head resting on the mat; reach the leg higher if your back lifts."},"Ball or slider leg curl":{"u":"https://www.youtube.com/watch?v=R_ixoqCNuNE","n":"Hips stay in a straight line from knees to shoulders; don't push them higher."},"Single-leg glute bridge hold":{"u":"https://www.youtube.com/watch?v=mUEViZ1R7l4","n":"Hold at a straight line from knee to shoulders with hips level; no arch."},"Side plank on knees with top-leg lift":{"u":"https://www.youtube.com/watch?v=MdjSIC7SgoE","n":"Keep your body in one line; lift the top leg only as high as your hips stay still."},"Lying figure-4 glute stretch + half-kneeling hip flexor stretch":{"u":"https://www.youtube.com/watch?v=B7QOzJFpzds","n":"Keep your head down and back relaxed. Hip flexor stretch (tuck your pelvis, no arch): https://www.youtube.com/watch?v=SDsjnuCf90U"},"Seated figure-4 stretch":{"u":"https://www.youtube.com/watch?v=vscW6Ai4MZs","n":"Sit tall; if you lean forward, hinge from the hips with a long back, never round."},"Standing quad stretch holding a support":{"u":"https://www.youtube.com/watch?v=v7DtYL2nTxg","n":"Tuck your pelvis slightly and keep your knees together; don't arch your back."},"Lying hamstring stretch with a band":{"u":"https://www.youtube.com/watch?v=b1dIAgHZu5E","n":"Keep the other knee bent with the foot on the floor and your back relaxed."},"Knee circles with the foot on the floor":{"u":"https://www.youtube.com/watch?v=6Pqs0glgWzA","n":"Keep the other foot on the floor and your pelvis still; small circles both ways."},"Single-leg balance holding a support":{"u":"https://www.youtube.com/watch?v=8xRDWe3pj30","n":"Stand tall with a light hold on the chair."},"Single-leg balance with arm reach":{"u":"https://www.youtube.com/watch?v=vUWzpPxm_bM","n":"Stand tall and reach without twisting or bending forward; start on the floor before a pad."},"Single-leg balance on a cushion":{"u":"https://www.youtube.com/watch?v=EFYhnFmH4Oc","n":"Keep a support nearby; stand tall."},"Standing march, slow":{"u":"https://www.youtube.com/watch?v=opLQ7PoMln8","n":"Lift slowly, stand tall, and hold a support if needed."},"Heel-to-toe walk":{"u":"https://www.youtube.com/watch?v=z_GKdFf3qv4","n":"Walk near a wall or counter for safety."},"Lying hamstring stretch with a band + figure-4 glute stretch":{"u":"https://www.youtube.com/watch?v=b1dIAgHZu5E","n":"Figure-4 glute stretch: https://www.youtube.com/watch?v=B7QOzJFpzds"},"Side-lying quad stretch":{"u":"https://www.youtube.com/watch?v=SapC8SML6mc","n":"Tuck your pelvis slightly and keep your knees together; don't arch."},"Standing calf stretch":{"u":"https://www.youtube.com/watch?v=tUA4MO1kXV8","n":"Keep your back heel down and your body upright."},"Breathing + lying arm floats, ribs down":{"u":"https://www.youtube.com/watch?v=6wjWRsyzECY","n":"Reach overhead only as far as your ribs and lower back stay heavy on the mat."},"Wall slides, ribs down":{"u":"https://www.youtube.com/watch?v=i_0zLUcE-zk","n":"Keep your lower back and ribs against the wall; slide only as high as you can without arching."},"Seated arm floats":{"u":"https://www.youtube.com/watch?v=E8UpHpbd5oo","n":"Sit tall; lift your arms only as high as your ribs stay down."},"Pilates arm series: biceps curl, standing tall":{"u":"https://www.youtube.com/shorts/IhGNuFs2DkY","n":"Arm-series curl with arms out to the side. Stand tall, ribs down, no leaning back."},"Pilates arm series: side arm raise":{"u":"https://www.youtube.com/watch?v=XPPfnSEATJA","n":"Use 1–2 kg, stand tall and lift only to shoulder height without leaning back."},"Pilates arm series: hug a tree":{"u":"https://www.youtube.com/shorts/BCyhnPzXmZI","n":"Keep a slight elbow bend and your ribs down as the arms close."},"Pilates arm series: hug a tree with a band":{"u":"https://www.youtube.com/watch?v=NJSkgeUnm6A","n":"Band wrapped behind your upper back; stand tall, ribs down, and don't lean forward."},"Pilates ring chest press":{"u":"https://www.youtube.com/shorts/5xrHlmTLM7M","n":"Stand tall; squeeze the ring without shrugging or leaning back."},"Pilates arm series: chest expansion":{"u":"https://www.youtube.com/watch?v=-qpcvD0LRdI","n":"Press your arms back past your hips without leaning forward or arching; ribs stay down."},"Face-down W-T arm lift, forehead down":{"u":"https://www.youtube.com/watch?v=CFt3WjCBbpc","n":"Do only the W and T. Forehead on a towel, chest stays down; only your arms lift."},"Face-down Y-T-W arm lift with light weights":{"u":"https://www.youtube.com/watch?v=Yv6sUKOwOY8","n":"Shown without weights; hold 0.5–1 kg. Forehead and chest stay on the mat. Skip the I."},"Arms-only dead bug with ball":{"u":"https://www.youtube.com/watch?v=TpWsBbyzj1U","n":"Shown with a large ball; with your small ball, squeeze it between your knees instead. Head stays down."},"Dead bug, opposite arm and leg, ball squeeze":{"u":"https://www.youtube.com/watch?v=8ygj9_MnB3s","n":"Head stays down; lower the leg only as far as your back stays neutral."},"Doorway chest stretch + cross-body shoulder stretch":{"u":"https://www.youtube.com/watch?v=O8rJw_TmC1Y","n":"Stay tall, don't arch. Cross-body stretch: https://www.youtube.com/watch?v=aIq0fLi8iak"},"Lying arm circles":{"u":"https://www.youtube.com/watch?v=9pEYwmufn48","n":"Keep circles small enough that your ribs and lower back don't lift."},"Wall chest stretch":{"u":"https://www.youtube.com/watch?v=40BBXdyJdak","n":"Turn away from the wall gently; keep your ribs down and back neutral."},"Neck side stretch":{"u":"https://www.youtube.com/watch?v=54y0JAT46vE"}};
+const videoUrl = (name, context = '') => (VIDEOS[name] && VIDEOS[name].u) || `https://www.youtube.com/results?search_query=${encodeURIComponent('how to ' + (context ? context + ' ' : '') + name.replace(/\(.*?\)/g, '').replace(/,.*$/, '').trim())}`;
+const videoLink = (name, label, cls = 'vid', context = '') => `<a class="${cls}" href="${esc(videoUrl(name, context))}" target="_blank" rel="noopener noreferrer">${label}</a>`;
+// One Pilates move at the chosen level, with its video and 3 alternatives.
+function flowMove(mv, lvl){
+  const [name, dose] = lvl === 2 ? mv.l2 : mv.l1;
+  const note = VIDEOS[name] && VIDEOS[name].n ? `<br><small class="muted">Video note: ${esc(VIDEOS[name].n)}</small>` : '';
+  return `${videoLink(name, esc(name), 'vid sm')} · ${esc(dose)}${note}<br><small>Alternatives: ${mv.alts.map(a => videoLink(a, esc(a), 'vid sm')).join(' · ')}</small>`;
+}
 const RUN = { // per program week: target minutes per session type; weekly totals assume ~3.5 sessions a week
   1:{A:'15–20',B:'25–30',C:'optional 10–15',wk:'50–65'}, 2:{A:'15–20',B:'25–30 · first B this week: 20-min test run',C:'optional 10–15',wk:'50–65'},
   3:{A:'20',B:'30',C:'optional 15',wk:'60–75'}, 4:{A:'20',B:'30–33',C:'optional 15',wk:'65–80'},
@@ -254,6 +348,14 @@ const RUN = { // per program week: target minutes per session type; weekly total
 const RUN_JAPAN = {A:'15–25 or a walk', B:'25–35', C:'walk', wk:'50–80 (walking counts)'};
 const RUN_RESTART = RUN[3];
 const fmtRun = (s) => /\d$/.test(s) ? `${s} min` : s;
+const FOOD_BASE = {kcal:1950, protein:100};
+const FOOD_ITEMS = [
+  ['Breakfast', [['Overnight oats',430,30],['2 eggs on rye + skyr with berries',360,32],['Oatmeal with milk + berries',355,16],['Pancakes with skyr + berries',450,25]]],
+  ['Meal-prep boxes', [['Box A – teriyaki chicken',475,35],['Box B – bolognese',565,35],['Box C – salmon or halibut',580,40],['Box C – cod or shrimp',430,38],['Fresh fish, potatoes + veg',580,40],['Stew or fish soup with potatoes',600,35]]],
+  ['Snacks', [['Rye bread + mackerel + banana',310,12],['Rye bread + egg + fruit',250,9],['Skyr 200 g + berries',170,22],['Banana + 10 g nuts',150,3],['Nuts 15 g',90,3],['Apple',80,0],['Banana',105,1],['Carrot or cucumber sticks',30,1]]],
+  ['Extras', [['2 slices rye + mackerel or egg + fruit',300,15],['Chocolate milk 300 ml + banana',300,11],['Hike pack',600,18],['Protein shake (25 g whey)',100,20]]],
+  ['Japan', [['Onigiri (salmon)',180,6],['Konbini salad chicken',110,24],['Boiled egg',72,6],['Yogurt cup or drink',100,5],['Edamame 100 g',120,11],['Teishoku set with grilled fish',700,35],['Ramen with egg + chashu',800,30]]]
+];
 const RUN_KINDS = ['easy','strides','short intervals','intervals','test','walk / bike','skipped'];
 
 /* ---------- Helpers ---------- */
@@ -268,8 +370,8 @@ const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7
 function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 1800); }
 
 /* ---------- State ---------- */
-const DEFAULT_STATE = () => ({v:1, settings:{name:'Halumi', start:'2026-11-09', japanFrom:'2026-12-23', japanTo:'2027-02-04'}, sessions:[], draft:null, choices:{}, body:[]});
-const merge = (s) => { const d = DEFAULT_STATE(); return {...d, ...s, settings:{...d.settings, ...s.settings}}; };
+const DEFAULT_STATE = () => ({v:1, settings:{name:'Halumi', start:'2026-11-09', japanFrom:'2026-12-23', japanTo:'2027-02-04'}, sessions:[], draft:null, choices:{}, body:[], food:{}});
+const merge = (s) => { const d = DEFAULT_STATE(); const food = s.food && typeof s.food === 'object' && !Array.isArray(s.food) ? s.food : {}; return {...d, ...s, food, settings:{...d.settings, ...s.settings}}; };
 let loadWarning = false;
 let state = load();
 function load(){
@@ -286,8 +388,12 @@ function load(){
     return DEFAULT_STATE();
   }
 }
+function validFood(f){
+  return f === undefined || (f && typeof f === 'object' && !Array.isArray(f) && Object.values(f).every(d => d && Array.isArray(d.items)
+    && d.items.every(x => x && typeof x.n === 'string' && Number.isFinite(x.kcal) && Number.isFinite(x.p))));
+}
 function validState(s){
-  return !!(s && typeof s === 'object' && Array.isArray(s.sessions) && Array.isArray(s.body) && s.settings && typeof s.settings.start === 'string'
+  return !!(s && typeof s === 'object' && validFood(s.food) && Array.isArray(s.sessions) && Array.isArray(s.body) && s.settings && typeof s.settings.start === 'string'
     && s.sessions.every(x => x && typeof x.date === 'string' && ORDER.includes(x.type) && Array.isArray(x.ex) && x.back && x.run && x.pilates
       && x.ex.every(e => e && typeof e.slot === 'string' && slotDefSafe(e.slot) && Array.isArray(e.sets) && slotDefSafe(e.slot).opts[e.variant])));
 }
@@ -421,8 +527,7 @@ const LIGHT_TXT = {green:'🟢 Green – keep progressing', yellow:'🟡 Yellow 
 function startSession(type, minimum, noGym){
   const date = isoToday();
   const p = planFor(date);
-  const all = noGym ? NOGYM[type] : SLOTS[type];
-  const slots = minimum ? all.slice(0,4) : all;
+  const slots = activeSlots(type, noGym);
   state.draft = {id:uid(), date, type, week:p.w, plan:p, wk:mondayOf(date), minimum:!!minimum, noGym:!!noGym, done:false,
     ex: slots.map((slot, i) => {
       const variant = state.choices[slot.key] ?? slot.def;
@@ -449,18 +554,19 @@ let tab = 'today';
 let pick = null; // session type chosen manually for today (overrides the rotation once)
 const ICON = {
   today:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 8v8M18 8v8M3 10v4M21 10v4M6 12h12"/></svg>',
+  food:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 11h16a8 8 0 0 1-16 0z"/><path d="M8 7c0-2 2-2 2-4M13 7c0-2 2-2 2-4"/></svg>',
   history:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>',
   body:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 18c3-6 5-9 8-9s5 3 8 9"/><circle cx="12" cy="5" r="2"/></svg>',
   program:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 3h9l3 3v15H6z"/><path d="M9 10h6M9 14h6M9 18h4"/></svg>',
   settings:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></svg>'
 };
 function renderTabs(){
-  const names = {today:'Today', history:'History', body:'Body', program:'Program', settings:'Settings'};
+  const names = {today:'Today', food:'Food', history:'History', body:'Body', program:'Program', settings:'Settings'};
   $('#tabs').innerHTML = Object.keys(names).map(k => `<button data-act="tab" data-tab="${k}" class="${tab===k?'on':''}" aria-current="${tab===k?'page':'false'}">${ICON[k]}<span>${names[k]}</span></button>`).join('');
 }
 function render(){
   renderTabs();
-  const view = {today:viewToday, history:viewHistory, body:viewBody, program:viewProgram, settings:viewSettings}[tab];
+  const view = {today:viewToday, food:viewFood, history:viewHistory, body:viewBody, program:viewProgram, settings:viewSettings}[tab];
   $('#app').innerHTML = view();
 }
 function painSeg(field, value){
@@ -492,17 +598,16 @@ function viewToday(){
   const type = pick || nextType();
   const info = SESSION_INFO[type];
   const r = runFor(p);
-  const japan = p.mode === 'japan';
-  const startBtns = japan
-    ? `<div class="grid2"><button class="primary" data-act="start" data-type="${type}">Gym</button><button class="primary" data-act="start-ng" data-type="${type}">No gym</button></div>
-       <p class="muted" style="font-size:13px">Gym: your normal exercises, pick the options the gym has. No gym: bodyweight, bands, backpack.</p>`
-    : `<button class="primary block" data-act="start" data-type="${type}">Start Session ${type}</button>`;
+  const noGym = state.noGymDate === today;
+  const startBtns = `<div class="spread" style="margin-bottom:10px"><small>Where are you training?</small><div class="seg"><button class="small ${noGym?'':'on'}" data-act="nogym" data-val="0" aria-pressed="${!noGym}">Gym</button><button class="small ${noGym?'on':''}" data-act="nogym" data-val="1" aria-pressed="${noGym}">No gym today</button></div></div>
+    ${noGym ? '<p class="muted" style="font-size:13px">No-gym version: bodyweight, bands and a backpack. Pilates is the same.</p>' : ''}
+    <button class="primary block" data-act="${noGym ? 'start-ng' : 'start'}" data-type="${type}">Start Session ${type}</button>`;
   const restartNote = p.mode === 'restart' ? `<p class="muted">Welcome home. Rest and walk the first days, then restart: 2 sets, 3 reps left, weights ~10% lighter (the logbook suggests them). Normal weeks continue after this.</p>` : '';
   h += `<section class="card hero"><p class="eyebrow">${esc(p.label)} · ${p.phase}</p>
     <h1>Session ${type}</h1><p style="font-size:18px;margin-top:2px">${info.name}</p>
-    <div class="row wrap" style="margin:10px 0 14px"><span class="pill">${SLOTS[type].length} exercises</span><span class="pill pil">Pilates ${info.pil}</span><span class="pill run">Run ${fmtRun(r[type])}</span></div>
+    <div class="row wrap" style="margin:10px 0 14px"><span class="pill">4 weight exercises</span><span class="pill pil">Pilates ${info.pil}</span><span class="pill run">Run ${fmtRun(r[type])}</span></div>
     ${restartNote}${startBtns}
-    <div class="row" style="margin-top:8px"><button class="block ghost" data-act="${japan ? 'start-ng-min' : 'start-min'}" data-type="${type}">Busy day: minimum session (45–55 min)</button></div>
+    <div class="row" style="margin-top:8px"><button class="block ghost" data-act="${noGym ? 'start-ng-min' : 'start-min'}" data-type="${type}">Busy day: minimum session (50–60 min)</button></div>
     <div class="spread" style="margin-top:10px"><small>Different session today?</small><div class="seg">${ORDER.map(t => `<button class="small ${t===type?'on':''}" data-act="pick" data-type="${t}">${t}</button>`).join('')}</div></div>
     ${p.over ? '<p class="muted">The 12 weeks are done: re-test, measure, and plan the next block. The logbook keeps going with week-12 settings.</p>' : ''}</section>`;
   // week summary (calendar week, Mon–Sun)
@@ -542,10 +647,11 @@ function viewDraft(){
     const rir = targetRir(slot, p);
     const prevGroup = i > 0 && slots[i-1].group && slots[i-1].group === slot.group;
     h += `<section class="card ex ${slot.group ? 'ss' : ''}" ${prevGroup ? 'style="margin-top:-4px"' : ''}>
-      <div class="ex-head"><div><p class="eyebrow">${slot.key.replace(/^n/, '')}${slot.group ? ' · superset' : ''}</p><h2>${esc(slot.name)}</h2>
+      <div class="ex-head"><div><p class="eyebrow">${d.type}${i+1}${slot.group ? ' · superset' : ''}</p><h2>${esc(slot.name)}</h2>
       <div class="ex-meta">${e.sets.length} × ${slot.reps[0]}–${slot.reps[1]} ${slot.unit || 'reps'} · ${rir.txt} reps left · rest ${slot.rest}</div></div></div>
       <label style="margin-top:10px" for="v-${i}">Exercise (1 = most back-friendly)</label>
       <select id="v-${i}" data-act="variant" data-i="${i}">${slot.opts.map((op, j) => `<option value="${j}" ${j===e.variant?'selected':''}>${j+1}. ${esc(op.n)}${j===slot.def?' ★':''}</option>`).join('')}</select>
+      ${videoLink(slot.opts[e.variant].n, '▶ How to do it')}${VIDEOS[slot.opts[e.variant].n] && VIDEOS[slot.opts[e.variant].n].n ? `<p class="muted" style="font-size:13px;margin-top:2px">Video note: ${esc(VIDEOS[slot.opts[e.variant].n].n)}</p>` : ''}
       ${slot.note ? `<p class="muted" style="font-size:13px">${esc(slot.note)}</p>` : ''}
       <div class="sug" style="${sug.warn ? 'background:var(--red-soft)' : ''}">${sug.text}</div>
       <div class="sets"><span class="hdr">Set</span><span class="hdr">${slot.opts[e.variant].eq === 'bw' ? 'kg / band' : 'kg'}</span><span class="hdr">${slot.unit ? 'reps / s' : 'reps'}</span><span></span>
@@ -560,15 +666,16 @@ function viewDraft(){
       <div class="seg pain">${[['ok','Fine','g'],['twinge','Twinge (3–5)','y'],['hurt','Hurt (>5 / sharp)','r']].map(([v,t,c]) => `<button class="${e.back===v?'on '+c:''}" data-act="exback" data-i="${i}" data-val="${v}" aria-pressed="${e.back===v}">${t}</button>`).join('')}</div>
     </section>`;
   });
-  // Pilates
+  // Pilates: the main part of every session
   const lvl = d.pilates.level;
-  const list = PILATES[lvl];
-  const idxs = SESSION_INFO[d.type].pilShort ? PIL_SHORT[lvl] : list.map((_, k) => k);
-  h += `<section class="card block-pil"><div class="spread"><div><p class="eyebrow">Pilates · ${SESSION_INFO[d.type].pil}</p><h2>Level ${lvl}${SESSION_INFO[d.type].pilShort ? ' – short' : ''}</h2></div>
+  const flow = FLOWS[d.type];
+  const idxs = flow.moves.map((mv, k) => k).filter(k => !d.minimum || flow.moves[k].short);
+  h += `<section class="card block-pil"><div class="spread"><div><p class="eyebrow">Pilates · ${d.minimum ? 'short version, 15 min' : flow.time}</p><h2>${esc(flow.name)}</h2><small>Level ${lvl} · props: ${esc(flow.props)}</small></div>
     <div class="seg">${[1,2].map(l => `<button class="${lvl===l?'on':''}" data-act="pillevel" data-val="${l}">L${l}</button>`).join('')}</div></div>
-    <ul class="checklist">${idxs.map(k => `<li><input type="checkbox" id="p-${k}" data-act="pil" data-k="${k}" ${d.pilates.done.includes(k)?'checked':''}><label for="p-${k}" style="color:var(--ink);font-weight:500;margin:0">${esc(list[k])}</label></li>`).join('')}</ul>
+    <ul class="checklist">${idxs.map(k => { const mv = flow.moves[k]; const nm = (lvl === 2 ? mv.l2 : mv.l1)[0];
+      return `<li><input type="checkbox" id="p-${k}" aria-label="Done: ${esc(nm)}" data-act="pil" data-k="${k}" ${d.pilates.done.includes(k)?'checked':''}><span style="color:var(--ink);font-weight:500">${flowMove(mv, lvl)}</span></li>`; }).join('')}</ul>
     <div class="grid2" style="margin-top:8px"><div><label for="pmin">Minutes</label><input id="pmin" inputmode="numeric" data-act="field" data-f="pilates.min" value="${esc(d.pilates.min)}"></div></div>
-    <p class="muted" style="font-size:13px">Neutral spine. No roll-ups, twists or crunches. ${lvl === 1 && p.w >= 5 ? '<b>From week 5: switch to L2 once Level 1 feels green.</b>' : 'Move to Level 2 (from week 5) once Level 1 is green.'}</p></section>`;
+    <p class="muted" style="font-size:13px">Neutral spine, ribs down. No roll-ups, twists or crunches. Take the last reps of each move close to tired. ${lvl === 1 && p.w >= 5 ? '<b>From week 5: switch to L2 once Level 1 feels green.</b>' : 'Move to Level 2 (from week 5) once Level 1 feels green.'}</p></section>`;
   // Run
   const r = runFor(p);
   h += `<section class="card block-run"><p class="eyebrow">Run · always after weights</p><h2>${fmtRun(r[d.type])}</h2>
@@ -582,6 +689,56 @@ function viewDraft(){
     <label for="note" style="margin-top:10px">Notes</label><textarea id="note" data-act="field" data-f="note">${esc(d.note)}</textarea>
     <button class="primary block" style="margin-top:12px" data-act="finish">Save session</button></section>`;
   return h;
+}
+let foodDate = null; // date shown on the Food tab (null = today)
+function foodDay(date){ return state.food[date] || (state.food[date] = {items:[], vitD:false, walkH:0, hikeH:0, longRun:false}); }
+function foodTargets(day){
+  const kcal = FOOD_BASE.kcal + Math.round((num(day.walkH) || 0) * 150) + Math.round((num(day.hikeH) || 0) * 250) + (day.longRun ? 150 : 0);
+  return {kcal, protein: FOOD_BASE.protein + ((num(day.hikeH) || 0) > 0 ? 10 : 0)};
+}
+function bar(val, target, color){
+  const pct = Math.min(100, Math.round(val / target * 100));
+  return `<div style="height:10px;border-radius:99px;background:var(--surface-2);overflow:hidden;margin:6px 0 2px"><div style="width:${pct}%;height:100%;background:var(--${color})"></div></div>`;
+}
+function viewFood(){
+  const date = foodDate || isoToday();
+  const day = state.food[date] || {items:[], vitD:false, walkH:0, hikeH:0, longRun:false};
+  const t = foodTargets(day);
+  const kcal = day.items.reduce((a, x) => a + x.kcal, 0), prot = day.items.reduce((a, x) => a + x.p, 0);
+  const week = Array.from({length:7}, (_, k) => state.food[addDays(date, -(k + (date === isoToday() ? 1 : 0)))]).filter(x => x && x.items.length);
+  const avg = (f) => week.length ? Math.round(week.reduce((a, x) => a + x.items.reduce((b, y) => b + y[f], 0), 0) / week.length) : '–';
+  const isToday = date === isoToday();
+  const month = +date.slice(5, 7);
+  return `<h1>Food</h1><p class="muted">Eat to keep your weight (≈ ${FOOD_BASE.kcal.toLocaleString('en-GB')} kcal) with plenty of protein. You are not dieting.</p>
+  <section class="card hero"><div class="spread"><button class="small ghost" data-act="fday" data-val="-1" aria-label="Previous day">‹</button><p class="eyebrow">${isToday ? 'Today' : fmtDate(date)}</p><button class="small ghost" data-act="fday" data-val="1" aria-label="Next day" ${isToday ? 'disabled' : ''}>›</button></div>
+    <div class="grid2" style="margin-top:6px"><div><div class="big-num">${kcal.toLocaleString('en-GB')}</div><small>of ${t.kcal.toLocaleString('en-GB')} kcal</small>${bar(kcal, t.kcal, 'accent')}</div>
+    <div><div class="big-num">${prot} g</div><small>of ${t.protein} g protein</small>${bar(prot, t.protein, 'green')}</div></div>
+    ${prot < t.protein && kcal > t.kcal * 0.6 ? `<p class="muted" style="margin-top:6px">Protein is behind: skyr, eggs, fish or a protein shake close the gap.</p>` : ''}
+    ${(month >= 10 || month <= 4) ? `<label style="margin-top:10px;display:flex;gap:10px;align-items:center;color:var(--ink)"><input type="checkbox" style="width:22px;min-height:22px" data-act="vitd" ${day.vitD ? 'checked' : ''}> Vitamin D3 (20 µg) taken</label>` : ''}</section>
+  <section class="card"><h3>Extra activity today</h3><p class="muted" style="font-size:13px">Daily 30-min walks are already in the base. These add to today's target.</p>
+    <div class="grid2" style="margin-top:8px"><div><label for="fw">Walks of 60+ min (hours)</label><input id="fw" inputmode="decimal" data-act="factivity" data-f="walkH" value="${esc(day.walkH || '')}" placeholder="0"></div>
+    <div><label for="fh">Hiking (hours)</label><input id="fh" inputmode="decimal" data-act="factivity" data-f="hikeH" value="${esc(day.hikeH || '')}" placeholder="0"></div></div>
+    <label style="margin-top:10px;display:flex;gap:10px;align-items:center;color:var(--ink)"><input type="checkbox" style="width:22px;min-height:22px" data-act="flongrun" ${day.longRun ? 'checked' : ''}> Ran 35+ min today (+150 kcal)</label></section>
+  <section class="card"><h3>What you ate</h3>${day.items.length ? `<ul class="checklist">${day.items.map((x, k) => `<li style="align-items:center"><span style="flex:1">${esc(x.n)}<br><small>${x.kcal} kcal · ${x.p} g protein</small></span><button class="small ghost" data-act="fdel" data-k="${k}" aria-label="Remove ${esc(x.n)}">✕</button></li>`).join('')}</ul>` : '<p class="muted">Nothing logged yet. Tap what you ate below.</p>'}</section>
+  ${FOOD_ITEMS.map(([g, items], gi) => `<details class="card flat" ${gi < 3 ? 'open' : ''}><summary><h3>${esc(g)}</h3></summary><div class="row wrap" style="margin-top:8px">${items.map(([n, k, p], ii) => `<button class="small" data-act="fadd" data-g="${gi}" data-i="${ii}">${esc(n)}<br><small class="muted">${k} kcal · ${p} g</small></button>`).join('')}</div></details>`).join('')}
+  <section class="card"><h3>Something else</h3><p class="muted" style="font-size:13px">Use the packaging or any food app for the numbers.</p>
+    <label for="cn" style="margin-top:8px">What</label><input id="cn" placeholder="e.g. Pizza slice">
+    <div class="grid2" style="margin-top:8px"><div><label for="ck">kcal</label><input id="ck" inputmode="numeric"></div><div><label for="cp">Protein (g)</label><input id="cp" inputmode="numeric"></div></div>
+    <button class="block" style="margin-top:10px" data-act="fcustom">Add</button></section>
+  <section class="card"><h3>Last 7 days</h3><div class="grid2" style="margin-top:8px"><div><div class="big-num">${avg('kcal')}</div><small>avg kcal/day, ${date === isoToday() ? 'last 7 days before today' : '7 days'} (${week.length} logged)</small></div><div><div class="big-num">${avg('p')}${week.length ? ' g' : ''}</div><small>avg protein/day</small></div></div></section>
+  <details class="card flat"><summary><h3>When to eat</h3></summary><table style="margin-top:8px"><tbody>
+    <tr><td><b>Morning session</b></td><td>Breakfast 1.5–2 h before (overnight oats). Banana 30–45 min before if breakfast was early. Lunch box within ~1 h after.</td></tr>
+    <tr><td><b>Afternoon session</b></td><td>Lunch box ~12:00. Snack 13:30–14:00 (rye bread + mackerel + banana). Dinner box 17:00–17:30.</td></tr>
+    <tr><td><b>Rest day</b></td><td>Breakfast, lunch box, snack, dinner box.</td></tr>
+    <tr><td><b>Coffee</b></td><td>Last cup by ~14:00. Water 1.6–1.9 L + ~0.5 L per session.</td></tr></tbody></table></details>
+  <details class="card flat"><summary><h3>Meal-prep boxes (raw weights)</h3></summary><table style="margin-top:8px"><tbody>
+    <tr><td><b>Box A</b><br><small>≈ 475 kcal · 35 g</small></td><td>110 g chicken, 60 g jasmine rice (dry), 200 g frozen veg, 5 g oil, 20 ml teriyaki</td></tr>
+    <tr><td><b>Box B</b><br><small>≈ 565 kcal · 35 g</small></td><td>110 g minced beef 8–12%, 60 g pasta (dry), 200 g chopped tomatoes, 100 g onion + carrot, 4 g oil, 15 g cheese</td></tr>
+    <tr><td><b>Box C</b><br><small>≈ 580 kcal · 40 g</small></td><td>120 g salmon or halibut (or 150 g shrimp), 250 g potatoes, 200 g broccoli or beans, 5 g oil, skyr-mustard-dill sauce. Cod or shrimp ≈ 430 kcal: add 100 g potatoes</td></tr>
+    <tr><td><b>Cook days</b></td><td>Sunday: 4 Box A + 4 Box B. Wednesday: 3 + 3. One fewer A or B for every Box C. Bolognese: total sauce ÷ 8.4 = your portion; Nick's = yours × 1.1.</td></tr></tbody></table></details>
+  <details class="card flat"><summary><h3>Your weekly shopping extras</h3></summary><p style="margin-top:8px">Chicken ~0.8 kg · minced beef ~0.8 kg · fish or shrimp 250–500 g · rice + pasta ~0.45 kg each · frozen veg 2–2.5 kg · chopped tomatoes 4 cans · onion + carrot ~0.7 kg · cheese ~100 g · potatoes ~1 kg · oats ~0.4 kg · skyr 1.5–2 kg · milk 1 L · frozen berries ~1 kg · rye bread 1 loaf · eggs 10 · canned mackerel 3 · bananas + apples ~14 · nuts ~150 g</p></details>
+  <details class="card flat"><summary><h3>Supplements</h3></summary><p style="margin-top:8px"><b>Vitamin D3</b> 20 µg daily Oct–Apr: take. <b>Creatine</b> 3 g daily: optional (+0.5–1 kg water on the scale). <b>Protein powder</b>: only on days you'd fall short. <b>Iron</b>: only if a blood test shows low ferritin, as your doctor says. <b>Omega-3</b>: only if you eat fatty fish less than once a week.</p></details>
+  <details class="card flat"><summary><h3>Adjusting (after 3 weeks)</h3></summary><p style="margin-top:8px">Weight stable, waist same or smaller, lifts up: change nothing. Weight up >0.25 kg/week for 3 weeks and waist up: −150 kcal. Weight down >0.25 kg/week: +150–250 kcal. Energy still low after 4 weeks: check ferritin and sleep, +150–200 kcal. <b>Period late (35+ days) or missed: +200–300 kcal now, and see a doctor if missed.</b> Never under ~1,600 kcal; training days ~1,900+.</p></details>`;
 }
 function viewHistory(){
   const d = doneSessions().slice().reverse();
@@ -633,7 +790,8 @@ function viewProgram(){
   <tr><td>1–2</td><td>Learn</td><td>2</td><td>3–4</td></tr><tr><td>3–4</td><td>Settle in</td><td>3 / 2</td><td>2–3</td></tr>
   <tr><td>5–8</td><td>Build</td><td>3</td><td>2 (machines 1–2)</td></tr><tr><td>9–10</td><td>Peak</td><td>3–4</td><td>1–2 (last set 0–1)</td></tr>
   <tr><td>11</td><td>Easy week</td><td>−1</td><td>3</td></tr><tr><td>12</td><td>Re-test</td><td>3–4</td><td>1–2</td></tr></tbody></table></section>
-  <section class="card"><h3>Japan (23 Dec – 4 Feb)</h3><p>Keep the rotation. Each session has a <b>Gym</b> version (your normal exercises: pick the options the gym has) and a <b>No gym</b> version (bodyweight, bands, backpack). 3 sets, 2 reps left. Pack a mini-band and a long loop band. Walk lots, run easy 2× a week, Pilates as normal. Back home: a few rest days, a restart week (~10% lighter), then weeks 7–12.</p></section>
+  <section class="card"><h3>No gym today?</h3><p>Tap <b>No gym today</b> on the Today screen: the weights become bodyweight and band versions, the Pilates flow stays the same. Works any day. In Japan (23 Dec – 4 Feb): 3 sets, 2 reps left, and pack a mini-band, a long band and the ball. Back home: a few rest days, a restart week (~10% lighter), then weeks 7–12.</p></section>
+  <section class="card"><h3>Pilates is the main part</h3><p>One flow per session: A lower body & glutes, B upper body & arms, C full body & core. Neutral spine, ribs down, no roll-ups, twists or crunches. Finish each move clearly tired. Level 2 from week 5 once Level 1 feels green; if one Level 2 move is too hard, do its Level 1 version.</p></section>
   <section class="card"><h3>Add reps, then weight</h3><p>Stay at a weight until every set reaches the top of the range. Then go up the smallest step (DB +1–2 kg, machine +1 plate, bar +2.5 kg) and start at the bottom again. The logbook shows you when.</p></section>
   <section class="card"><h3>Back traffic light</h3><p>🟢 0–2: keep going. 🟡 3–5 and fine by next morning: OK, no increases on that exercise this week. 🔴 over 5, sharp, down the leg, or worse next morning: stop that exercise, use the option one step more back-friendly next time.</p>
   <p><b>Emergency (112):</b> numbness in the saddle area, bladder/bowel changes, symptoms in both legs, rapidly weakening legs.</p></section>
@@ -680,8 +838,17 @@ document.addEventListener('click', (ev) => {
   const b = ev.target.closest('[data-act]'); if (!b) return;
   const act = b.dataset.act, d = state.draft, i = +b.dataset.i, j = +b.dataset.j;
   switch (act) {
-    case 'tab': tab = b.dataset.tab; render(); window.scrollTo(0,0); return;
+    case 'tab': tab = b.dataset.tab; foodDate = null; render(); window.scrollTo(0,0); return;
     case 'pick': pick = b.dataset.type === nextType() ? null : b.dataset.type; render(); return;
+    case 'fday': { const cur = foodDate || isoToday(); const nx = addDays(cur, +b.dataset.val); foodDate = nx >= isoToday() ? null : nx; render(); return; }
+    case 'fadd': { const [n, k, p] = FOOD_ITEMS[+b.dataset.g][1][+b.dataset.i]; foodDay(foodDate || isoToday()).items.push({n, kcal:k, p}); toast(`Added: ${n}`); break; }
+    case 'fdel': foodDay(foodDate || isoToday()).items.splice(+b.dataset.k, 1); break;
+    case 'fcustom': {
+      const n = ($('#cn').value || '').trim() || 'Food', k = Math.round(num($('#ck').value) ?? NaN), p = Math.round(num($('#cp').value) ?? 0);
+      if (!Number.isFinite(k) || k < 0 || k > 5000 || p < 0 || p > 300) { toast('Type the kcal (and protein) first'); return; }
+      foodDay(foodDate || isoToday()).items.push({n: n.slice(0, 60), kcal:k, p}); toast(`Added: ${n}`); break;
+    }
+    case 'nogym': state.noGymDate = b.dataset.val === '1' ? isoToday() : null; break;
     case 'start': startSession(b.dataset.type, false); return;
     case 'start-min': startSession(b.dataset.type, true); return;
     case 'start-ng': startSession(b.dataset.type, false, true); return;
@@ -742,6 +909,9 @@ document.addEventListener('change', (ev) => {
   else if (act === 'field' && el.tagName === 'SELECT') setPath(d, el.dataset.f, el.value);
   else if (act === 'pil') { const k = +el.dataset.k; d.pilates.done = el.checked ? [...new Set([...d.pilates.done, k])] : d.pilates.done.filter(x => x !== k); save(); return; }
   else if (act === 'period') { bodyEntry().period = el.checked; }
+  else if (act === 'vitd') { foodDay(foodDate || isoToday()).vitD = el.checked; save(); return; }
+  else if (act === 'flongrun') { foodDay(foodDate || isoToday()).longRun = el.checked; }
+  else if (act === 'factivity') { const v = num(el.value); if (el.value.trim() && (v === null || v < 0 || v > 12)) { toast('Enter hours, e.g. 1.5'); el.value = ''; return; } foodDay(foodDate || isoToday())[el.dataset.f] = v || 0; }
   else if (act === 'setting' && el.type === 'date') { const f = el.dataset.f; if (/^\d{4}-\d{2}-\d{2}$/.test(el.value)) state.settings[f] = el.value; else if (f !== 'start' && el.value === '') state.settings[f] = ''; }
   else if (act === 'import') {
     const f = el.files && el.files[0]; if (!f) return;
