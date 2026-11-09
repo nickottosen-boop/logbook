@@ -1,0 +1,765 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Logbook">
+<meta name="theme-color" content="#F4EEE6">
+<title>Halumi Logbook</title>
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+:root{
+  --bg:#F4EEE6; --surface:#FFFDF9; --surface-2:#EFE6DA; --ink:#211B17; --muted:#6F655C; --line:#E2D7C9;
+  --accent:#B4513A; --accent-ink:#fff; --accent-soft:#F3DCD3;
+  --run:#2F5D62; --run-soft:#D9E7E6; --pil:#6B5A8E; --pil-soft:#E5DFEF;
+  --green:#3C7A4A; --green-soft:#DCEBDD; --yellow:#A87A12; --yellow-soft:#F4E7C2; --red:#B23A2E; --red-soft:#F4D6D1;
+  --radius-l:22px; --radius-m:14px; --radius-s:10px;
+  --shadow:0 1px 0 rgba(33,27,23,.04),0 8px 24px -12px rgba(33,27,23,.18);
+  --font-display:ui-rounded,"SF Pro Rounded","Nunito","Avenir Next",system-ui,sans-serif;
+  --font-body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#171412; --surface:#221E1B; --surface-2:#2B2622; --ink:#F3ECE4; --muted:#A79C91; --line:#38312B;
+    --accent:#E07A5F; --accent-ink:#1A1310; --accent-soft:#4A2A22;
+    --run:#7FB3B8; --run-soft:#1F3436; --pil:#B3A2D6; --pil-soft:#2E2840;
+    --green:#7DBE8A; --green-soft:#1F3324; --yellow:#E2B84E; --yellow-soft:#3A3018; --red:#F08473; --red-soft:#43221D;
+    --shadow:0 1px 0 rgba(0,0,0,.3),0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 var(--font-body);padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+main{max-width:560px;margin:0 auto;padding:calc(14px + env(safe-area-inset-top)) 16px 24px}
+h1,h2,h3{font-family:var(--font-display);margin:0;letter-spacing:-.01em}
+h1{font-size:30px;line-height:1.1;font-weight:800}
+h2{font-size:20px;font-weight:750}
+h3{font-size:16px;font-weight:700}
+p{margin:.4em 0}
+small,.muted{color:var(--muted)}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-l);padding:16px;margin:12px 0;box-shadow:var(--shadow)}
+.card.flat{box-shadow:none}
+.hero{background:linear-gradient(160deg,var(--accent-soft),var(--surface) 70%);border:none}
+.row{display:flex;gap:10px;align-items:center}
+.row.wrap{flex-wrap:wrap}
+.spread{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.stack>*+*{margin-top:8px}
+.pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 10px;font-size:13px;font-weight:650;background:var(--surface-2);color:var(--ink)}
+.pill.run{background:var(--run-soft);color:var(--run)} .pill.pil{background:var(--pil-soft);color:var(--pil)}
+.pill.green{background:var(--green-soft);color:var(--green)} .pill.yellow{background:var(--yellow-soft);color:var(--yellow)} .pill.red{background:var(--red-soft);color:var(--red)}
+button,.btn{font:inherit;font-weight:650;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:var(--radius-m);padding:10px 14px;min-height:44px;cursor:pointer;transition:transform .12s ease,background .15s ease}
+button:active{transform:scale(.97)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:transparent}
+button.ghost{background:transparent}
+button.small{min-height:36px;padding:6px 10px;font-size:14px;border-radius:var(--radius-s)}
+button.block{width:100%}
+button.danger{color:var(--red)}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius-s);padding:9px 10px;min-height:44px;width:100%}
+textarea{min-height:70px;resize:vertical}
+label{font-size:14px;font-weight:600;color:var(--muted);display:block;margin-bottom:4px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.ex{border-left:4px solid var(--accent)}
+.ex.ss{border-left-color:var(--pil)}
+.ex-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.ex-meta{font-size:13px;color:var(--muted);margin-top:2px}
+.sug{background:var(--surface-2);border-radius:var(--radius-s);padding:8px 10px;font-size:14px;margin:10px 0}
+.sug b{color:var(--accent)}
+.sets{display:grid;grid-template-columns:28px 1fr 1fr 48px;gap:8px;align-items:center}
+.sets .n{font-weight:700;color:var(--muted);text-align:center}
+.sets .hdr{font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.chk{width:48px;min-height:44px;padding:0;border-radius:var(--radius-s);font-size:18px}
+.chk.on{background:var(--green);color:#fff;border-color:transparent}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{min-height:38px;min-width:38px;padding:4px 8px;font-size:14px;border-radius:var(--radius-s)}
+.seg button.on{background:var(--ink);color:var(--bg);border-color:transparent}
+.seg.pain button.on.g{background:var(--green);color:#fff}
+.seg.pain button.on.y{background:var(--yellow);color:#fff}
+.seg.pain button.on.r{background:var(--red);color:#fff}
+.checklist{list-style:none;padding:0;margin:8px 0 0}
+.checklist li{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--line)}
+.checklist input{width:22px;min-height:22px;height:22px;margin-top:2px;accent-color:var(--pil)}
+.block-run{border-left:4px solid var(--run)} .block-pil{border-left:4px solid var(--pil)}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--surface);background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:6px 8px calc(6px + env(safe-area-inset-bottom));display:flex;justify-content:center;z-index:5}
+nav.tabs .in{display:grid;grid-template-columns:repeat(5,1fr);max-width:560px;width:100%;gap:4px}
+nav.tabs button{border:none;background:transparent;font-size:12px;padding:6px 2px;min-height:52px;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted)}
+nav.tabs button svg{width:22px;height:22px}
+nav.tabs button.on{color:var(--accent)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+details>summary{cursor:pointer;list-style:none}
+details>summary::-webkit-details-marker{display:none}
+.toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-weight:650;font-size:14px;z-index:9;opacity:0;transition:opacity .2s ease;pointer-events:none}
+.toast.show{opacity:1}
+.light-dot{width:12px;height:12px;border-radius:50%;display:inline-block}
+.big-num{font-family:var(--font-display);font-size:28px;font-weight:800;line-height:1}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<nav class="tabs" aria-label="Main"><div class="in" id="tabs"></div></nav>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+'use strict';
+/* ---------- Program data ---------- */
+const KEY = 'halumi-logbook-v1';
+const ORDER = ['A','B','C'];
+const SESSION_INFO = {
+  A:{name:'Legs & glutes + back', pil:'10–15 min', pilShort:true},
+  B:{name:'Upper body', pil:'5–10 min (or skip)', pilShort:true},
+  C:{name:'Full body + long Pilates', pil:'25–35 min', pilShort:false}
+};
+const o = (n, eq) => ({n, eq});
+// Option lists are ordered most → least back-friendly (research report 01). `def` = default option.
+// `priority` = gets a 4th set in the peak weeks. `group` = superset partner.
+const LAT = (def) => ({name:'Lateral raise', reps:[12,20], rest:'60 s', compound:false, def, opts:[
+  o('Seated DB lateral raise (backrest)','db'), o('Chest-supported lateral raise (face-down, incline bench)','db'),
+  o('Machine lateral raise','machine'), o('Single-arm cable lateral raise, holding a support','cable')]});
+const LEGCURL = (def) => ({name:'Leg curl', reps:[10,15], rest:'90 s', compound:false, def, opts:[
+  o('Seated leg curl','machine'), o('Lying leg curl (hips down)','machine'), o('Single-leg seated leg curl','machine'), o('Slider or ball leg curl','bw')]});
+const ROW = (def) => ({name:'Row', reps:[8,12], rest:'90 s', compound:true, def, opts:[
+  o('Chest-supported machine row','machine'), o('Incline-bench DB row (chest on 30–45° bench)','db'),
+  o('Chest-supported T-bar row','bar'), o('Seated cable row, sitting tall, no rocking','cable')]});
+const HIPTHRUST = (def) => ({name:'Hip thrust', reps:[8,12], rest:'2 min', compound:true, def, note:'Chin tucked, ribs down. Stop at a straight line knees→shoulders, no arch at the top.', opts:[
+  o('Glute bridge on the floor (DB on hips)','db'), o('Machine hip thrust','machine'), o('Smith or barbell hip thrust','bar'), o('Single-leg hip thrust on a bench','bw')]});
+const BICEPS = (def) => ({name:'Biceps', reps:[10,15], rest:'– (superset)', compound:false, def, opts:[
+  o('Preacher curl (machine or DB)','db'), o('Incline-bench DB curl','db'), o('Seated DB / hammer curl, back supported','db'), o('Cable curl, standing tall, no leaning back','cable')]});
+const TRICEPS = (def) => ({name:'Triceps', reps:[10,15], rest:'60–90 s after both', compound:false, def, opts:[
+  o('Lying DB triceps extension','db'), o('Cable pushdown, standing tall','cable'), o('Seated triceps machine / machine dip','machine'), o('Single-arm cable pushdown','cable')]});
+const SLOTS = {
+  A:[
+    {key:'A1', name:'Squat', reps:[8,12], rest:'2–3 min', compound:true, def:1, note:'Sit to the box under control, chest tall, ribs down. Stop before the pelvis tucks. Hack squat: hips stay on the pad.', opts:[
+      o('Hack squat (back on the pad)','machine'), o('Goblet squat to a box','db'), o('Smith squat, feet slightly forward','bar'), o('Safety-bar squat or front squat','bar')]},
+    {key:'A2', ...HIPTHRUST(1)},
+    {key:'A3', ...LEGCURL(0)},
+    {key:'A4', ...ROW(0), group:'SS1', priority:true, rest:'– (superset)'},
+    {key:'A5', ...LAT(0), group:'SS1', rest:'60–90 s after both'},
+    {key:'A6a', ...BICEPS(1), group:'SS2'},
+    {key:'A6b', ...TRICEPS(1), group:'SS2'}
+  ],
+  B:[
+    {key:'B1', name:'Lat pulldown', reps:[8,12], rest:'– (superset)', compound:true, def:0, group:'SS0', note:'No leaning back and arching to finish.', opts:[
+      o('Lat pulldown, neutral or medium grip','machine'), o('Machine pulldown / high row (pad)','machine'), o('Single-arm cable pulldown, kneeling','cable'), o('Assisted pull-up machine','machine')]},
+    {key:'B2', name:'Chest press', reps:[8,12], rest:'90 s after both', compound:true, def:0, group:'SS0', opts:[
+      o('Machine chest press','machine'), o('Incline machine or Smith press (30°)','machine'), o('DB floor press','db'), o('DB bench press, flat or 30° (feet on bench if you arch)','db')]},
+    {key:'B3', ...ROW(1)},
+    {key:'B4', name:'Shoulder press', reps:[8,12], rest:'90 s', compound:true, def:0, note:'Ribs down. Options 3–4 only after passing the overhead self-test.', opts:[
+      o('Half-kneeling landmine press (one arm)','bar'), o('High-incline DB press (60–70°)','db'), o('Standing landmine press','bar'), o('Seated machine shoulder press (back on pad)','machine')]},
+    {key:'B5a', name:'Rear delts', group:'SS1', reps:[12,20], rest:'– (superset)', compound:false, def:0, note:'Face pull: stand tall, don\'t lean back as it gets heavy.', opts:[
+      o('Reverse pec-deck','machine'), o('Chest-supported rear-delt raise','db'), o('Face pull at face height','cable'), o('Band pull-apart','bw')]},
+    {key:'B5b', ...LAT(2), group:'SS1', rest:'60–90 s after both'},
+    {key:'B6a', ...BICEPS(0), group:'SS2'},
+    {key:'B6b', ...TRICEPS(1), group:'SS2'}
+  ],
+  C:[
+    {key:'C1', name:'Leg press', reps:[10,15], rest:'2 min', compound:true, def:1, note:'Controlled depth: lower back and hips stay on the pad. Stop before the pelvis rolls up.', opts:[
+      o('Leg extension','machine'), o('45° leg press, controlled depth','machine'), o('Horizontal leg press','machine'), o('Single-leg leg press','machine')]},
+    {key:'C2', name:'Pulldown / high row', reps:[8,12], rest:'– (superset)', compound:true, priority:true, def:1, group:'SS0', note:'Straight-arm pulldown: ribs stay down at the bottom.', opts:[
+      o('Lat pulldown, neutral grip','machine'), o('Machine high row (chest pad)','machine'), o('Single-arm cable pulldown','cable'), o('Straight-arm cable pulldown','cable')]},
+    {key:'C3', name:'Incline press', reps:[8,12], rest:'90 s after both', compound:true, def:1, group:'SS0', opts:[
+      o('Machine chest press','machine'), o('Incline machine press','machine'), o('DB incline press (30°)','db'), o('Incline push-up → floor push-up','bw')]},
+    {key:'C4', ...HIPTHRUST(2)},
+    {key:'C5a', ...LEGCURL(1), group:'SS1', rest:'– (superset)'},
+    {key:'C5b', ...LAT(1), group:'SS1', priority:true, rest:'60–90 s after both'},
+    {key:'C6', name:'Core', reps:[10,12], rest:'60 s', compound:false, core:true, def:1, unit:'reps/side or s', opts:[
+      o('Bird dog','bw'), o('Half-kneeling Pallof press','cable'), o('Side plank (knees → feet)','bw'), o('Suitcase carry (one DB, 20–30 m)','db')]}
+  ]
+};
+/* No-gym versions (Japan / travel): bodyweight, resistance bands, a backpack or water bottles. */
+const BANDROW = (def) => ({name:'Row', reps:[10,20], rest:'60–90 s', compound:true, priority:true, def, opts:[
+  o('Door-anchored band row, half-kneeling','bw'), o('Seated band row (band round feet), sit tall','bw'),
+  o('Single-arm door-anchored band row, split stance','bw'), o('Inverted row under a sturdy table, knees bent','bw')]});
+const BANDLAT = (def) => ({name:'Lateral raise', reps:[12,20], rest:'60 s', compound:false, priority:true, def, opts:[
+  o('Side-lying lateral raise (water bottle)','bw'), o('Seated lateral raise with bottles, back against wall','bw'),
+  o('Band lateral raise, standing on the band, ribs down','bw'), o('Single-arm band lateral raise','bw')]});
+const NG_PULL = (def) => ({name:'Pulldown', reps:[10,20], rest:'60–90 s', compound:true, priority:true, def, opts:[
+  o('Band lat pulldown, kneeling (band high in a door)','bw'), o('Single-arm band pulldown, kneeling','bw'),
+  o('Band straight-arm pulldown','bw'), o('Inverted row under a sturdy table, knees bent','bw')]});
+const NG_PUSH = (def) => ({name:'Push-up', reps:[8,15], rest:'60–90 s', compound:true, def, opts:[
+  o('Wall push-up','bw'), o('Incline push-up (hands on desk or bed)','bw'), o('Band chest press (band behind back)','bw'), o('Knee push-up → floor push-up','bw')]});
+const NG_BRIDGE = (def) => ({name:'Glute bridge', reps:[10,20], rest:'60–90 s', compound:true, def, note:'No arch at the top. Backpack on hips to make it harder.', opts:[
+  o('Glute bridge, band above knees','bw'), o('Bridge march','bw'), o('Single-leg glute bridge','bw'), o('Single-leg hip thrust, shoulders on sofa or bed','bw')]});
+const NG_HAM = (def) => ({name:'Hamstrings', reps:[8,15], rest:'60 s', compound:false, def, opts:[
+  o('Bridge heel walk-outs','bw'), o('Towel or slider leg curl (hard floor)','bw'), o('Band leg curl, face-down (band on a bed leg)','bw'), o('Single-leg towel leg curl','bw')]});
+const NG_BI = (def) => ({name:'Biceps', reps:[12,20], rest:'– (superset)', compound:false, def, opts:[
+  o('Seated bottle or backpack curl, back supported','bw'), o('Band curl, standing tall','bw'), o('Band hammer curl','bw'), o('Single-arm band curl','bw')]});
+const NG_TRI = (def) => ({name:'Triceps', reps:[12,20], rest:'60–90 s after both', compound:false, def, opts:[
+  o('Lying bottle triceps extension','bw'), o('Band pushdown (band high in a door)','bw'), o('Close-grip incline push-up (hands on desk)','bw'), o('Single-arm band pushdown','bw')]});
+const NOGYM = {
+  A:[
+    {key:'nA1', name:'Squat', reps:[10,20], rest:'90 s', compound:true, def:1, note:'Slow: 3 s down. Backpack in front to make it harder.', opts:[
+      o('Wall sit (30–60 s)','bw'), o('Chair or box squat, tempo','bw'), o('Split squat holding a support','bw'), o('Backpack goblet squat to a chair','bw')]},
+    {key:'nA2', ...NG_BRIDGE(0)},
+    {key:'nA3', ...NG_HAM(1)},
+    {key:'nA4', ...BANDROW(0), group:'SS1', rest:'– (superset)'},
+    {key:'nA5', ...BANDLAT(2), group:'SS1', rest:'60–90 s after both'},
+    {key:'nA6a', ...NG_BI(1), group:'SS2'},
+    {key:'nA6b', ...NG_TRI(1), group:'SS2'}
+  ],
+  B:[
+    {key:'nB1', ...NG_PULL(0), group:'SS0', rest:'– (superset)'},
+    {key:'nB2', ...NG_PUSH(1), group:'SS0', rest:'60–90 s after both'},
+    {key:'nB3', ...BANDROW(1)},
+    {key:'nB4', name:'Shoulder press', reps:[10,15], rest:'60–90 s', compound:true, def:0, note:'Press up and forward, ribs down. Never arch to finish.', opts:[
+      o('Half-kneeling single-arm band press, up and forward','bw'), o('Seated backpack/bottle press, back against a wall','bw'),
+      o('Incline pike push-up (hands on bed)','bw'), o('Standing band press, split stance','bw')]},
+    {key:'nB5a', name:'Rear delts', group:'SS1', reps:[12,20], rest:'– (superset)', compound:false, def:1, opts:[
+      o('Face-down T-raise lying on a bed (light)','bw'), o('Band pull-apart, arms at chest height','bw'), o('Band face pull (door anchor)','bw'), o('Single-arm band reverse fly','bw')]},
+    {key:'nB5b', ...BANDLAT(2), group:'SS1', rest:'60–90 s after both'},
+    {key:'nB6a', ...NG_BI(1), group:'SS2'},
+    {key:'nB6b', ...NG_TRI(1), group:'SS2'}
+  ],
+  C:[
+    {key:'nC1', name:'Single leg', reps:[8,15], rest:'90 s', compound:true, def:2, opts:[
+      o('Wall sit (30–60 s)','bw'), o('Chair squat, tempo','bw'), o('Split squat holding a support','bw'), o('Step-up onto a stair or bench (knee height)','bw')]},
+    {key:'nC2', ...NG_PULL(0), group:'SS0', rest:'– (superset)'},
+    {key:'nC3', ...NG_PUSH(1), group:'SS0', rest:'60–90 s after both'},
+    {key:'nC4', ...NG_BRIDGE(2)},
+    {key:'nC5a', ...NG_HAM(1), group:'SS1', rest:'– (superset)'},
+    {key:'nC5b', ...BANDLAT(2), group:'SS1', rest:'60–90 s after both'},
+    {key:'nC6', name:'Core', reps:[10,12], rest:'60 s', compound:false, core:true, def:1, unit:'reps/side or s', opts:[
+      o('Bird dog','bw'), o('Band Pallof press (door anchor), half-kneeling','bw'), o('Side plank (knees → feet)','bw'), o('Suitcase carry with a backpack, 20–30 m','bw')]}
+  ]
+};
+const PILATES = {
+  1:['Breathing in neutral spine + small pelvic tilts · 1–2 min — alt: feet up on a chair / side-lying / seated tall',
+    'Knee folds / tabletop toe taps (head down) · 2×8/side — alt: arms-only dead bug / small marches / toe taps pressing hands into thighs',
+    'Leg slides · 2×8/side — alt: heel slides on a towel / bent-knee fall-outs / single-leg march',
+    'Glute bridge, no arch at top · 2×10 — alt: feet on a chair / ball between knees / 20 s hold',
+    'Side-lying clam + side-kick series · 2×12/side — alt: side-lying leg lift / banded clamshell / standing side leg lift',
+    'Quadruped arm reach, then leg reach · 2×6/side — alt: quadruped hover hold / arms only / legs only',
+    'Kneeling plank · 3×20 s — alt: incline plank / wall plank / dead bug hold',
+    'Side plank on knees · 2×20 s/side — alt: against a wall / side-lying leg-lift hold / half-kneeling Pallof press',
+    'Face-down small single-leg kicks · 2×10 — alt: face-down glute squeezes / standing kickback / bridge march',
+    'Single-leg circles, small · 5 each way/side — alt: bent-knee circles / knee circles, foot on floor / supine marching'],
+  2:['Modified Hundred (tabletop, head down) · 50–100 pumps','Dead bug, opposite arm/leg · 2×8/side','Single-leg bridge or bridge march · 2×8/side','Bird dog, 2–3 s hold · 2×6/side','Full plank / leg pull front with leg lifts · 3×20–30 s','Side plank on feet (or top-leg lift) · 2×20–30 s/side','Prone dart, chest hovers 1–2 cm, no arch · 2×8','Side-kick series, bigger range · 2×12/side','Reverse plank if hips stay level · 2×15–20 s']
+};
+const PIL_SHORT = {1:[1,3,5,6,7], 2:[1,2,3,4,5]};
+const RUN = { // per program week: target minutes per session type; weekly totals assume ~3.5 sessions a week
+  1:{A:'15–20',B:'25–30',C:'optional 10–15',wk:'50–65'}, 2:{A:'15–20',B:'25–30 · first B this week: 20-min test run',C:'optional 10–15',wk:'50–65'},
+  3:{A:'20',B:'30',C:'optional 15',wk:'60–75'}, 4:{A:'20',B:'30–33',C:'optional 15',wk:'65–80'},
+  5:{A:'20–25',B:'33–36',C:'optional 15–20',wk:'75–90',q:'strides'}, 6:{A:'20–25',B:'33–36',C:'optional 15–20',wk:'75–90',q:'strides'},
+  7:{A:'25',B:'36–38',C:'optional 20',wk:'80–95',q:'short intervals'}, 8:{A:'25',B:'36–40',C:'optional 20',wk:'85–100',q:'short intervals'},
+  9:{A:'25–30',B:'38–40',C:'optional 20–25',wk:'90–105',q:'intervals'}, 10:{A:'25–30',B:'38–40',C:'optional 20–25',wk:'90–105',q:'intervals'},
+  11:{A:'20',B:'30',C:'walk',wk:'~70'}, 12:{A:'25',B:'20-min test run + 10–15 easy',C:'optional 20–25',wk:'75–90'}
+};
+const RUN_JAPAN = {A:'15–25 or a walk', B:'25–35', C:'walk', wk:'50–80 (walking counts)'};
+const RUN_RESTART = RUN[3];
+const fmtRun = (s) => /\d$/.test(s) ? `${s} min` : s;
+const RUN_KINDS = ['easy','strides','short intervals','intervals','test','walk / bike','skipped'];
+
+/* ---------- Helpers ---------- */
+const $ = (s, el=document) => el.querySelector(s);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad = (n) => String(n).padStart(2,'0');
+const isoToday = () => { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; };
+const dayDiff = (a, b) => Math.round((Date.parse(b+'T12:00:00') - Date.parse(a+'T12:00:00')) / 864e5);
+const fmtDate = (iso) => new Date(iso+'T12:00:00').toLocaleDateString('en-GB',{weekday:'short', day:'numeric', month:'short'});
+const num = (v) => { const x = parseFloat(String(v).replace(',','.')); return Number.isFinite(x) ? x : null; };
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 1800); }
+
+/* ---------- State ---------- */
+const DEFAULT_STATE = () => ({v:1, settings:{name:'Halumi', start:'2026-11-09', japanFrom:'2026-12-23', japanTo:'2027-02-04'}, sessions:[], draft:null, choices:{}, body:[]});
+const merge = (s) => { const d = DEFAULT_STATE(); return {...d, ...s, settings:{...d.settings, ...s.settings}}; };
+let loadWarning = false;
+let state = load();
+function load(){
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (!raw) return DEFAULT_STATE();
+    const s = JSON.parse(raw);
+    if (validState(s)) return merge(s);
+    throw new Error('Saved data failed validation');
+  } catch (e) {
+    console.error('Could not read saved data', e);
+    try { const raw = localStorage.getItem(KEY); if (raw) localStorage.setItem(KEY + '-bak-' + Date.now(), raw); } catch (e2) { console.error(e2); }
+    loadWarning = true;
+    return DEFAULT_STATE();
+  }
+}
+function validState(s){
+  return !!(s && typeof s === 'object' && Array.isArray(s.sessions) && Array.isArray(s.body) && s.settings && typeof s.settings.start === 'string'
+    && s.sessions.every(x => x && typeof x.date === 'string' && ORDER.includes(x.type) && Array.isArray(x.ex) && x.back && x.run && x.pilates
+      && x.ex.every(e => e && typeof e.slot === 'string' && slotDefSafe(e.slot) && Array.isArray(e.sets) && slotDefSafe(e.slot).opts[e.variant])));
+}
+function slotDefSafe(key){ const g = key[0] === 'n' ? NOGYM[key[1]] : SLOTS[key[0]]; return g ? g.find(s => s.key === key) : undefined; }
+function save(){
+  try { localStorage.setItem(KEY, JSON.stringify(state)); }
+  catch (e) { console.error(e); toast('Could not save – export a backup now'); }
+}
+if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
+
+/* ---------- Program logic ---------- */
+const addDays = (iso, n) => { const d = new Date(iso+'T12:00:00'); d.setDate(d.getDate()+n); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; };
+const mondayOf = (iso) => addDays(iso, -((new Date(iso+'T12:00:00').getDay() + 6) % 7));
+function phaseName(w){
+  if (w <= 2) return 'Learn';
+  if (w <= 4) return 'Settle in';
+  if (w <= 8) return 'Build';
+  if (w <= 10) return 'Peak';
+  if (w === 11) return 'Easy week';
+  return 'Re-test';
+}
+function japanDates(){
+  const {start, japanFrom:jf, japanTo:jt} = state.settings;
+  if (!jf || !jt || jf >= jt || dayDiff(start, jf) < 7) return null;
+  let res = addDays(jt, 1);
+  while (new Date(res+'T12:00:00').getDay() !== 1) res = addDays(res, 1);
+  return {jf, jt, res, weeksBefore: Math.floor(dayDiff(start, jf) / 7)};
+}
+// The plan for a given date: normal week 1–12, Japan, or the restart week after Japan.
+function planFor(date){
+  const d0 = dayDiff(state.settings.start, date);
+  const J = japanDates();
+  if (J && date >= J.jf && date < J.jt) return {mode:'japan', w:6, label:`Japan · week ${Math.floor(dayDiff(J.jf, date)/7) + 1}`, phase:'Japan'};
+  if (J && date >= J.jt && date < addDays(J.res, 7)) return {mode:'restart', w:5, label:'Back home', phase:'Restart'};
+  let w;
+  if (J && date >= addDays(J.res, 7)) w = J.weeksBefore + 1 + Math.floor(dayDiff(addDays(J.res, 7), date) / 7);
+  else { w = d0 < 0 ? 1 : Math.floor(d0/7) + 1; if (J) w = Math.min(w, J.weeksBefore); }
+  return {mode:'normal', w:Math.min(w, 12), label:`Week ${w > 12 ? '12+' : w} of 12`, phase:phaseName(Math.min(w, 12)), over:w > 12, pre:d0 < 0};
+}
+const planOf = (s) => s.plan || {mode:'normal', w:s.week || 1, label:`Week ${s.week || 1}`, phase:phaseName(s.week || 1)};
+const runFor = (p) => p.mode === 'japan' ? RUN_JAPAN : p.mode === 'restart' ? RUN_RESTART : RUN[p.w];
+function targetSets(slot, idx, p){
+  if (p.mode === 'japan') return 3;
+  if (p.mode === 'restart') return 2;
+  const w = p.w;
+  const peak = slot.priority ? 4 : 3;
+  if (w <= 2) return 2;
+  if (w <= 4) return idx < 3 ? 3 : 2;
+  if (w <= 8) return 3;
+  if (w === 11) return peak - 1;
+  return peak;
+}
+function targetRir(slot, p){
+  const w = p.w;
+  if (slot.core) return {txt:'controlled, 2–3 left', min:2};
+  if (p.mode === 'japan') return {txt:'2', min:2};
+  if (p.mode === 'restart') return {txt:'3', min:3};
+  if (w <= 2) return {txt:'3–4', min:3};
+  if (w <= 4) return {txt:'2–3', min:2};
+  if (w === 11) return {txt:'3', min:3};
+  if (w <= 8) return slot.compound ? {txt:'2', min:2} : {txt:'1–2', min:1};
+  return slot.compound ? {txt:'1–2', min:1} : {txt:'0–1 on last set', min:0};
+}
+function step(eq, kg){
+  if (eq === 'db') return kg < 10 ? 1 : 2;
+  if (eq === 'bw') return 0;
+  return 2.5;
+}
+const doneSessions = () => state.sessions.filter(s => s.done).sort((a,b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
+function nextType(){
+  const d = doneSessions(); if (!d.length) return 'A';
+  return ORDER[(ORDER.indexOf(d[d.length-1].type) + 1) % 3];
+}
+function lastFor(slotKey, variant){
+  const d = doneSessions();
+  for (let i = d.length - 1; i >= 0; i--) {
+    const e = d[i].ex.find(x => x.slot === slotKey && x.variant === variant);
+    if (e && e.sets.some(s => s.done)) return {ex:e, session:d[i]};
+  }
+  return null;
+}
+function suggestion(slot, variant, p, date){
+  const opt = slot.opts[variant];
+  const [lo, hi] = slot.reps;
+  const last = lastFor(slot.key, variant);
+  if (!last) return {kg:null, reps:`${lo}–${hi}`, text: opt.eq === 'bw' ? `First time on this one: pick a band or version where you could do about 4 more reps than the top of the range.` : `First time on this one: start light. Pick a weight you could lift about 4 more times than the reps.`};
+  const sets = last.ex.sets.filter(s => s.done && num(s.reps) !== null);
+  const kgs = sets.map(s => num(s.kg)).filter(x => x !== null);
+  const kg = kgs.length ? Math.max(...kgs) : null;
+  const lastTxt = sets.map(s => `${num(s.kg) ?? 'bw'}×${s.reps}`).join(', ');
+  const rirTxt = last.ex.rir !== null && last.ex.rir !== undefined ? ` · ${last.ex.rir} left` : '';
+  const base = `Last (${fmtDate(last.session.date)}): ${lastTxt}${rirTxt}.`;
+  if (last.ex.back === 'hurt') {
+    const up = Math.max(variant - 1, 0);
+    return {kg: kg !== null ? Math.round(kg*0.6*2)/2 : null, reps:`${lo}–${hi}`, warn:true,
+      text:`${base} It hurt last time 🔴. ${up < variant ? `Switch to <b>${esc(slot.opts[up].n)}</b>, or cut` : 'Cut'} the weight or range by 30–50%.`};
+  }
+  const gap = dayDiff(last.session.date, date);
+  if (gap >= 14 && kg !== null && opt.eq !== 'bw') {
+    const back = Math.round(kg * 0.9 * 2) / 2;
+    return {kg:back, reps:`${lo}–${hi}`, text:`${base} First time in ${Math.round(gap/7)} weeks: <b>start ~10% lighter (${back} kg)</b> and build back up.`};
+  }
+  // Only go up when every planned set was completed at the top of the range.
+  const allTop = sets.length >= 2 && sets.length === last.ex.sets.length && sets.every(s => num(s.reps) >= hi);
+  const rirOk = last.ex.rir === null || last.ex.rir === undefined || last.ex.rir >= targetRir(slot, p).min;
+  const anyLow = sets.some(s => num(s.reps) < lo);
+  if (last.ex.back === 'twinge') return {kg, reps:`${lo}–${hi}`, text:`${base} 🟡 last time: <b>same weight</b> this week, no increase.`};
+  if (allTop && !rirOk) return {kg, reps:`${lo}–${hi}`, text:`${base} All sets hit ${hi}, but harder than planned: <b>same weight</b> until it feels like ${targetRir(slot, p).txt} reps left.`};
+  if (allTop && kg === null && opt.eq !== 'bw') return {kg, reps:`${lo}–${hi}`, text:`${base} No weight was logged last time: use the same as then and write it down.`};
+  if (allTop && rirOk) {
+    const inc = step(opt.eq, kg ?? 0);
+    if (!inc || kg === null) return {kg, reps:`${lo}–${hi}`, text:`${base} Top of the range: <b>make it harder</b> (slower tempo, stronger band, more weight in the backpack, or the next option).`};
+    return {kg: Math.round((kg + inc)*100)/100, reps:`${lo}`, text:`${base} Every set hit ${hi}: <b>go up to ${Math.round((kg+inc)*100)/100} kg</b> and start at ${lo} reps.`};
+  }
+  if (anyLow) return {kg, reps:`${lo}–${hi}`, text:`${base} Some sets were below ${lo}: <b>same weight</b>. If it happens twice, drop ~10%.`};
+  return {kg, reps:`${lo}–${hi}`, text:`${base} <b>Same weight</b>, aim for +1 rep on the sets below ${hi}.`};
+}
+function light(s){
+  const b = s.back || {};
+  const hurt = s.ex.some(e => e.back === 'hurt');
+  const twinge = s.ex.some(e => e.back === 'twinge');
+  if ((b.after ?? -1) > 5 || hurt) return 'red';
+  if (b.morning != null && (b.morning > 5 || (b.before != null && b.morning > b.before + 1))) return 'red';
+  if ((b.after ?? -1) >= 3 || twinge || (b.morning ?? -1) >= 3 || (b.morning != null && b.before != null && b.morning > b.before)) return 'yellow';
+  if (b.after == null && !twinge) return 'none';
+  return 'green';
+}
+const LIGHT_TXT = {green:'🟢 Green – keep progressing', yellow:'🟡 Yellow – fine, no weight increases on that exercise this week', red:'🔴 Red – next time use a more back-friendly option or cut load 30–50%', none:'No back rating yet'};
+
+/* ---------- Draft session ---------- */
+function startSession(type, minimum, noGym){
+  const date = isoToday();
+  const p = planFor(date);
+  const all = noGym ? NOGYM[type] : SLOTS[type];
+  const slots = minimum ? all.slice(0,4) : all;
+  state.draft = {id:uid(), date, type, week:p.w, plan:p, wk:mondayOf(date), minimum:!!minimum, noGym:!!noGym, done:false,
+    ex: slots.map((slot, i) => {
+      const variant = state.choices[slot.key] ?? slot.def;
+      return {slot:slot.key, variant, rir:null, back:'ok', sets:Array.from({length:targetSets(slot, i, p)}, () => ({kg:'', reps:'', done:false}))};
+    }),
+    pilates:{level: state.pilLevel || 1, done:[], min:''},
+    run:{kind: suggestRunKind(type, p), min:'', rpe:''},
+    back:{before:null, after:null, morning:null}, note:''};
+  pick = null;
+  save(); render();
+  window.scrollTo(0,0);
+}
+function suggestRunKind(type, p){
+  const r = runFor(p);
+  if (type === 'C' && r.C === 'walk') return 'walk / bike';
+  if (type !== 'B' || !r.q) return 'easy';
+  const lastB = doneSessions().filter(s => s.type === 'B' && planOf(s).mode === 'normal' && planOf(s).w >= 5).pop();
+  return lastB && lastB.run && lastB.run.kind !== 'easy' ? 'easy' : r.q;
+}
+const slotDef = (key) => (key[0] === 'n' ? NOGYM[key[1]] : SLOTS[key[0]]).find(s => s.key === key);
+
+/* ---------- Views ---------- */
+let tab = 'today';
+let pick = null; // session type chosen manually for today (overrides the rotation once)
+const ICON = {
+  today:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 8v8M18 8v8M3 10v4M21 10v4M6 12h12"/></svg>',
+  history:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>',
+  body:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 18c3-6 5-9 8-9s5 3 8 9"/><circle cx="12" cy="5" r="2"/></svg>',
+  program:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 3h9l3 3v15H6z"/><path d="M9 10h6M9 14h6M9 18h4"/></svg>',
+  settings:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></svg>'
+};
+function renderTabs(){
+  const names = {today:'Today', history:'History', body:'Body', program:'Program', settings:'Settings'};
+  $('#tabs').innerHTML = Object.keys(names).map(k => `<button data-act="tab" data-tab="${k}" class="${tab===k?'on':''}" aria-current="${tab===k?'page':'false'}">${ICON[k]}<span>${names[k]}</span></button>`).join('');
+}
+function render(){
+  renderTabs();
+  const view = {today:viewToday, history:viewHistory, body:viewBody, program:viewProgram, settings:viewSettings}[tab];
+  $('#app').innerHTML = view();
+}
+function painSeg(field, value){
+  return `<div class="seg pain" role="group">` + Array.from({length:11}, (_, i) => {
+    const c = i <= 2 ? 'g' : i <= 5 ? 'y' : 'r';
+    return `<button class="small ${value===i?'on '+c:''}" data-act="pain" data-field="${field}" data-val="${i}" aria-pressed="${value===i}">${i}</button>`;
+  }).join('') + `</div>`;
+}
+// Run minutes in the calendar week (Mon–Sun) that contains `date`.
+function weekRunTotal(date){
+  const wk = mondayOf(date);
+  return doneSessions().filter(s => mondayOf(s.date) === wk).reduce((a, s) => a + (num(s.run?.min) || 0), 0)
+    + (state.draft && mondayOf(state.draft.date) === wk ? (num(state.draft.run.min) || 0) : 0);
+}
+function viewToday(){
+  const today = isoToday();
+  const p = planFor(today);
+  const name = esc(state.settings.name || 'you');
+  let h = '';
+  // next-morning back check
+  const pending = doneSessions().filter(s => s.back && s.back.morning == null && s.date < today).pop();
+  if (pending && !state.draft) h += `<section class="card"><p class="eyebrow">Morning check</p><h3>How's your back this morning after Session ${pending.type} (${fmtDate(pending.date)})?</h3><p class="muted">0 = nothing, 10 = worst. Before that session it was ${pending.back.before ?? '–'}.</p>${painSeg('morning:'+pending.id, null)}</section>`;
+  if (loadWarning) h += `<section class="card" style="background:var(--red-soft)"><h3>Saved data could not be read</h3><p>A copy was kept on this phone. Import your latest backup (Settings) before logging anything new.</p></section>`;
+  if (state.draft) return h + viewDraft();
+  h += banners(today);
+  if (p.pre) {
+    h += `<section class="card hero"><p class="eyebrow">Starts ${fmtDate(state.settings.start)}</p><h1>Hi ${name} 👋</h1><p>Your program hasn't started yet. You can still log a session early, it will count as week 1.</p></section>`;
+  }
+  const type = pick || nextType();
+  const info = SESSION_INFO[type];
+  const r = runFor(p);
+  const japan = p.mode === 'japan';
+  const startBtns = japan
+    ? `<div class="grid2"><button class="primary" data-act="start" data-type="${type}">Gym</button><button class="primary" data-act="start-ng" data-type="${type}">No gym</button></div>
+       <p class="muted" style="font-size:13px">Gym: your normal exercises, pick the options the gym has. No gym: bodyweight, bands, backpack.</p>`
+    : `<button class="primary block" data-act="start" data-type="${type}">Start Session ${type}</button>`;
+  const restartNote = p.mode === 'restart' ? `<p class="muted">Welcome home. Rest and walk the first days, then restart: 2 sets, 3 reps left, weights ~10% lighter (the logbook suggests them). Normal weeks continue after this.</p>` : '';
+  h += `<section class="card hero"><p class="eyebrow">${esc(p.label)} · ${p.phase}</p>
+    <h1>Session ${type}</h1><p style="font-size:18px;margin-top:2px">${info.name}</p>
+    <div class="row wrap" style="margin:10px 0 14px"><span class="pill">${SLOTS[type].length} exercises</span><span class="pill pil">Pilates ${info.pil}</span><span class="pill run">Run ${fmtRun(r[type])}</span></div>
+    ${restartNote}${startBtns}
+    <div class="row" style="margin-top:8px"><button class="block ghost" data-act="${japan ? 'start-ng-min' : 'start-min'}" data-type="${type}">Busy day: minimum session (45–55 min)</button></div>
+    <div class="spread" style="margin-top:10px"><small>Different session today?</small><div class="seg">${ORDER.map(t => `<button class="small ${t===type?'on':''}" data-act="pick" data-type="${t}">${t}</button>`).join('')}</div></div>
+    ${p.over ? '<p class="muted">The 12 weeks are done: re-test, measure, and plan the next block. The logbook keeps going with week-12 settings.</p>' : ''}</section>`;
+  // week summary (calendar week, Mon–Sun)
+  const thisWeek = doneSessions().filter(s => mondayOf(s.date) === mondayOf(today));
+  const lights = thisWeek.map(light);
+  h += `<section class="card"><div class="spread"><h3>This week</h3><span class="muted">${thisWeek.length} session${thisWeek.length===1?'':'s'}</span></div>
+    <div class="grid2" style="margin-top:10px">
+      <div><div class="big-num">${weekRunTotal(today)}</div><small>run min · target ${r.wk}</small></div>
+      <div><div class="row">${lights.length ? lights.map(l => `<span class="light-dot" style="background:var(--${l==='none'?'line':l})" title="${l}"></span>`).join('') : '<span class="muted">–</span>'}</div><small>back lights</small></div>
+    </div>
+    <p class="muted" style="margin-top:10px">Rotation: ${ORDER.map(t => t===type ? `<b>${t}</b>` : t).join(' → ')} → … Missed a day? Just do the next one.</p></section>`;
+  return h;
+}
+// Warnings shown above the next session.
+function banners(today){
+  let h = '';
+  const done = doneSessions();
+  let reds = 0;
+  for (let i = done.length - 1; i >= 0 && light(done[i]) === 'red'; i--) reds++;
+  if (reds >= 2) h += `<section class="card" style="background:var(--red-soft)"><h3>Two red sessions in a row</h3><p>Time to see a physio. Until then: walks, Level 1 Pilates and upper-body machines, and the most back-friendly option on every leg exercise.</p></section>`;
+  else if (reds === 1) h += `<section class="card" style="background:var(--red-soft)"><h3>Last session was red 🔴</h3><p>Today: on the exercise that bothered you, use the option one step more back-friendly, or cut the weight or range by 30–50%. Keep everything else easy.</p></section>`;
+  const last = state.settings.lastExport;
+  if (done.length >= 3 && (!last || dayDiff(last, today) >= 14)) h += `<section class="card" style="background:var(--yellow-soft)"><div class="spread"><div><h3>Back up your logbook</h3><p class="muted">${last ? `Last backup ${fmtDate(last)}.` : 'No backup yet.'} Your data only lives on this phone.</p></div><button class="small" data-act="export">Export</button></div></section>`;
+  return h;
+}
+function viewDraft(){
+  const d = state.draft;
+  const p = planOf(d);
+  const slots = d.ex.map(e => slotDef(e.slot));
+  let h = `<section class="card hero"><div class="spread"><p class="eyebrow">${esc(p.label)} · ${p.phase}${d.noGym ? ' · No gym' : ''}${d.minimum ? ' · Minimum' : ''}</p><button class="small ghost" data-act="cancel">Cancel</button></div>
+    <h1>Session ${d.type}</h1><p>${SESSION_INFO[d.type].name}</p>
+    <label style="margin-top:12px">Back pain before (0–10)</label>${painSeg('before', d.back.before)}
+    <p class="muted" style="margin-top:10px">Warm-up: 5 min easy cardio · breathing, dead bug toe taps, glute bridge, bird dog · ramp-up sets: ~½ weight ×8, ~¾ weight ×4.</p></section>`;
+  d.ex.forEach((e, i) => {
+    const slot = slots[i];
+    const sug = suggestion(slot, e.variant, p, d.date);
+    const rir = targetRir(slot, p);
+    const prevGroup = i > 0 && slots[i-1].group && slots[i-1].group === slot.group;
+    h += `<section class="card ex ${slot.group ? 'ss' : ''}" ${prevGroup ? 'style="margin-top:-4px"' : ''}>
+      <div class="ex-head"><div><p class="eyebrow">${slot.key.replace(/^n/, '')}${slot.group ? ' · superset' : ''}</p><h2>${esc(slot.name)}</h2>
+      <div class="ex-meta">${e.sets.length} × ${slot.reps[0]}–${slot.reps[1]} ${slot.unit || 'reps'} · ${rir.txt} reps left · rest ${slot.rest}</div></div></div>
+      <label style="margin-top:10px" for="v-${i}">Exercise (1 = most back-friendly)</label>
+      <select id="v-${i}" data-act="variant" data-i="${i}">${slot.opts.map((op, j) => `<option value="${j}" ${j===e.variant?'selected':''}>${j+1}. ${esc(op.n)}${j===slot.def?' ★':''}</option>`).join('')}</select>
+      ${slot.note ? `<p class="muted" style="font-size:13px">${esc(slot.note)}</p>` : ''}
+      <div class="sug" style="${sug.warn ? 'background:var(--red-soft)' : ''}">${sug.text}</div>
+      <div class="sets"><span class="hdr">Set</span><span class="hdr">${slot.opts[e.variant].eq === 'bw' ? 'kg / band' : 'kg'}</span><span class="hdr">${slot.unit ? 'reps / s' : 'reps'}</span><span></span>
+      ${e.sets.map((s, j) => `<span class="n">${j+1}</span>
+        <input inputmode="${slot.opts[e.variant].eq === 'bw' ? 'text' : 'decimal'}" aria-label="Set ${j+1} kg" data-act="set" data-i="${i}" data-j="${j}" data-f="kg" value="${esc(s.kg)}" placeholder="${sug.kg ?? ''}">
+        <input inputmode="numeric" aria-label="Set ${j+1} reps" data-act="set" data-i="${i}" data-j="${j}" data-f="reps" value="${esc(s.reps)}" placeholder="${esc(sug.reps)}">
+        <button class="chk ${s.done?'on':''}" data-act="done" data-i="${i}" data-j="${j}" aria-label="Set ${j+1} done" aria-pressed="${s.done}">✓</button>`).join('')}</div>
+      <div class="row" style="margin-top:8px"><button class="small ghost" data-act="addset" data-i="${i}">+ set</button><button class="small ghost" data-act="rmset" data-i="${i}">− set</button></div>
+      <label style="margin-top:10px">Reps left in the tank on the last set</label>
+      <div class="seg">${[0,1,2,3,4].map(v => `<button class="${e.rir===v?'on':''}" data-act="rir" data-i="${i}" data-val="${v}" aria-pressed="${e.rir===v}">${v===4?'4+':v}</button>`).join('')}</div>
+      <label style="margin-top:10px">Back on this exercise</label>
+      <div class="seg pain">${[['ok','Fine','g'],['twinge','Twinge (3–5)','y'],['hurt','Hurt (>5 / sharp)','r']].map(([v,t,c]) => `<button class="${e.back===v?'on '+c:''}" data-act="exback" data-i="${i}" data-val="${v}" aria-pressed="${e.back===v}">${t}</button>`).join('')}</div>
+    </section>`;
+  });
+  // Pilates
+  const lvl = d.pilates.level;
+  const list = PILATES[lvl];
+  const idxs = SESSION_INFO[d.type].pilShort ? PIL_SHORT[lvl] : list.map((_, k) => k);
+  h += `<section class="card block-pil"><div class="spread"><div><p class="eyebrow">Pilates · ${SESSION_INFO[d.type].pil}</p><h2>Level ${lvl}${SESSION_INFO[d.type].pilShort ? ' – short' : ''}</h2></div>
+    <div class="seg">${[1,2].map(l => `<button class="${lvl===l?'on':''}" data-act="pillevel" data-val="${l}">L${l}</button>`).join('')}</div></div>
+    <ul class="checklist">${idxs.map(k => `<li><input type="checkbox" id="p-${k}" data-act="pil" data-k="${k}" ${d.pilates.done.includes(k)?'checked':''}><label for="p-${k}" style="color:var(--ink);font-weight:500;margin:0">${esc(list[k])}</label></li>`).join('')}</ul>
+    <div class="grid2" style="margin-top:8px"><div><label for="pmin">Minutes</label><input id="pmin" inputmode="numeric" data-act="field" data-f="pilates.min" value="${esc(d.pilates.min)}"></div></div>
+    <p class="muted" style="font-size:13px">Neutral spine. No roll-ups, twists or crunches. ${lvl === 1 && p.w >= 5 ? '<b>From week 5: switch to L2 once Level 1 feels green.</b>' : 'Move to Level 2 (from week 5) once Level 1 is green.'}</p></section>`;
+  // Run
+  const r = runFor(p);
+  h += `<section class="card block-run"><p class="eyebrow">Run · always after weights</p><h2>${fmtRun(r[d.type])}</h2>
+    <p class="muted" style="font-size:13px">Easy = you can talk in full sentences.${d.type==='B' && r.q ? ` Every other B: ${r.q}.` : ''} Week so far: ${weekRunTotal(d.date)} / ${r.wk} min.</p>
+    <label for="rkind">Type</label><select id="rkind" data-act="field" data-f="run.kind">${RUN_KINDS.map(k => `<option ${d.run.kind===k?'selected':''}>${k}</option>`).join('')}</select>
+    <div class="grid2" style="margin-top:8px"><div><label for="rmin">Minutes</label><input id="rmin" inputmode="numeric" data-act="field" data-f="run.min" value="${esc(d.run.min)}"></div>
+    <div><label for="rrpe">Effort 1–10</label><input id="rrpe" inputmode="numeric" data-act="field" data-f="run.rpe" value="${esc(d.run.rpe)}"></div></div></section>`;
+  // Finish
+  h += `<section class="card"><h2>Finish</h2><label style="margin-top:10px">Back pain right after (0–10)</label>${painSeg('after', d.back.after)}
+    <p style="margin-top:10px">${LIGHT_TXT[light(d)]}</p>
+    <label for="note" style="margin-top:10px">Notes</label><textarea id="note" data-act="field" data-f="note">${esc(d.note)}</textarea>
+    <button class="primary block" style="margin-top:12px" data-act="finish">Save session</button></section>`;
+  return h;
+}
+function viewHistory(){
+  const d = doneSessions().slice().reverse();
+  if (!d.length) return `<h1>History</h1><section class="card"><p>No sessions yet. Your first one shows up here.</p></section>`;
+  return `<h1>History</h1><p class="muted">${d.length} sessions logged</p>` + d.map(s => {
+    const l = light(s);
+    return `<details class="card flat"><summary><div class="spread"><div><p class="eyebrow">${esc(planOf(s).label)} · ${fmtDate(s.date)}${s.noGym?' · no gym':''}${s.minimum?' · min':''}</p><h3>Session ${s.type} – ${SESSION_INFO[s.type].name}</h3></div><span class="light-dot" style="background:var(--${l==='none'?'line':l})"></span></div></summary>
+      <table style="margin-top:10px"><tbody>${s.ex.map(e => { const sl = slotDef(e.slot); const sets = e.sets.filter(x => x.done);
+        return `<tr><td><b>${esc(sl.name)}</b><br><small>${esc(sl.opts[e.variant].n)}</small></td><td>${sets.map(x => `${num(x.kg) ?? 'bw'}×${esc(x.reps)}`).join(', ') || '–'}${e.rir!=null?`<br><small>${e.rir} left</small>`:''}${e.back!=='ok'?`<br><small>${e.back==='hurt'?'🔴':'🟡'} back</small>`:''}</td></tr>`; }).join('')}
+      <tr><td>Pilates</td><td>L${s.pilates.level} · ${esc(s.pilates.min || '–')} min</td></tr>
+      <tr><td>Run</td><td>${esc(s.run.kind)} · ${esc(s.run.min || '–')} min${s.run.rpe ? ` · effort ${esc(s.run.rpe)}` : ''}</td></tr>
+      <tr><td>Back</td><td>before ${s.back.before ?? '–'} · after ${s.back.after ?? '–'} · morning ${s.back.morning ?? '–'}</td></tr>
+      ${s.note ? `<tr><td>Note</td><td>${esc(s.note)}</td></tr>` : ''}</tbody></table>
+      <button class="small ghost danger" style="margin-top:8px" data-act="delsession" data-id="${s.id}">Delete session</button></details>`;
+  }).join('');
+}
+function viewBody(){
+  const today = isoToday();
+  const e = state.body.find(b => b.date === today) || {date:today};
+  const sorted = state.body.slice().sort((a,b) => b.date.localeCompare(a.date));
+  const weights = sorted.filter(b => num(b.weight) !== null);
+  const avg = (from, to) => { const xs = weights.filter(b => dayDiff(b.date, today) >= from && dayDiff(b.date, today) < to).map(b => num(b.weight)); return xs.length ? (xs.reduce((a,b)=>a+b,0)/xs.length).toFixed(1) : '–'; };
+  const periods = sorted.filter(b => b.period).map(b => b.date);
+  const cycle = periods.length >= 2 ? dayDiff(periods[1], periods[0]) : null;
+  const since = periods.length ? dayDiff(periods[0], today) : null;
+  const late = since !== null && since > 35;
+  return `<h1>Body</h1><p class="muted">Weigh in the morning. Waist weekly. Photos and measurements every 4 weeks.</p>
+    <section class="card"><div class="grid3"><div><div class="big-num">${avg(0,7)}</div><small>7-day avg kg</small></div><div><div class="big-num">${avg(7,14)}</div><small>week before</small></div>
+    <div><div class="big-num">${cycle ?? '–'}</div><small>last cycle (days)</small></div></div>
+    ${(cycle && cycle > 35) || late ? '<p style="color:var(--red);margin-top:8px">Over 35 days since a period started: add 200–300 kcal now. See a doctor if a period is missed.</p>' : ''}
+    ${since !== null ? `<p class="muted" style="margin-top:8px">Day ${since + 1} since your last period started (${fmtDate(periods[0])}).</p>` : ''}</section>
+    <section class="card"><h2>Today · ${fmtDate(today)}</h2>
+    <div class="grid2" style="margin-top:10px">
+      <div><label for="bw">Weight (kg)</label><input id="bw" inputmode="decimal" data-act="body" data-f="weight" value="${esc(e.weight ?? '')}"></div>
+      <div><label for="bwa">Waist (cm)</label><input id="bwa" inputmode="decimal" data-act="body" data-f="waist" value="${esc(e.waist ?? '')}"></div>
+      <div><label for="bh">Hips (cm)</label><input id="bh" inputmode="decimal" data-act="body" data-f="hips" value="${esc(e.hips ?? '')}"></div>
+      <div><label for="ba">Upper arm (cm)</label><input id="ba" inputmode="decimal" data-act="body" data-f="arm" value="${esc(e.arm ?? '')}"></div></div>
+    <label style="margin-top:10px">Energy today (1–5)</label><div class="seg">${[1,2,3,4,5].map(v => `<button class="${e.energy===v?'on':''}" data-act="energy" data-val="${v}">${v}</button>`).join('')}</div>
+    <label style="margin-top:12px;display:flex;gap:10px;align-items:center;color:var(--ink)"><input type="checkbox" style="width:22px;min-height:22px" data-act="period" ${e.period?'checked':''}> Period started today</label>
+    <div class="row" style="margin-top:8px"><div style="flex:1"><label for="pdate">Or log an earlier period start</label><input id="pdate" type="date" max="${today}"></div><button class="small" style="align-self:flex-end" data-act="period-past">Add</button></div>
+    <p class="muted" style="font-size:13px">Saved automatically.</p></section>
+    <section class="card flat"><h3>Log</h3><table><thead><tr><th>Date</th><th>kg</th><th>Waist</th><th>Energy</th><th></th></tr></thead><tbody>
+    ${sorted.slice(0,40).map(b => `<tr><td>${fmtDate(b.date)}</td><td>${esc(b.weight ?? '')}</td><td>${esc(b.waist ?? '')}</td><td>${b.energy ?? ''}</td><td>${b.period ? '●' : ''}</td></tr>`).join('') || '<tr><td colspan="5" class="muted">Nothing yet</td></tr>'}</tbody></table></section>`;
+}
+function viewProgram(){
+  return `<h1>Program</h1><p class="muted">The short version. The full program is in the PDF.</p>
+  <section class="card"><h3>Every other day: A → B → C</h3><p>Warm-up → weights → Pilates → run. Missed a day? Do the next session in line. Busy? Do the minimum session; it still counts.</p></section>
+  <section class="card"><h3>The 12 weeks</h3><table><thead><tr><th>Weeks</th><th>Phase</th><th>Sets</th><th>Reps left</th></tr></thead><tbody>
+  <tr><td>1–2</td><td>Learn</td><td>2</td><td>3–4</td></tr><tr><td>3–4</td><td>Settle in</td><td>3 / 2</td><td>2–3</td></tr>
+  <tr><td>5–8</td><td>Build</td><td>3</td><td>2 (machines 1–2)</td></tr><tr><td>9–10</td><td>Peak</td><td>3–4</td><td>1–2 (last set 0–1)</td></tr>
+  <tr><td>11</td><td>Easy week</td><td>−1</td><td>3</td></tr><tr><td>12</td><td>Re-test</td><td>3–4</td><td>1–2</td></tr></tbody></table></section>
+  <section class="card"><h3>Japan (23 Dec – 4 Feb)</h3><p>Keep the rotation. Each session has a <b>Gym</b> version (your normal exercises: pick the options the gym has) and a <b>No gym</b> version (bodyweight, bands, backpack). 3 sets, 2 reps left. Pack a mini-band and a long loop band. Walk lots, run easy 2× a week, Pilates as normal. Back home: a few rest days, a restart week (~10% lighter), then weeks 7–12.</p></section>
+  <section class="card"><h3>Add reps, then weight</h3><p>Stay at a weight until every set reaches the top of the range. Then go up the smallest step (DB +1–2 kg, machine +1 plate, bar +2.5 kg) and start at the bottom again. The logbook shows you when.</p></section>
+  <section class="card"><h3>Back traffic light</h3><p>🟢 0–2: keep going. 🟡 3–5 and fine by next morning: OK, no increases on that exercise this week. 🔴 over 5, sharp, down the leg, or worse next morning: stop that exercise, use the option one step more back-friendly next time.</p>
+  <p><b>Emergency (112):</b> numbness in the saddle area, bladder/bowel changes, symptoms in both legs, rapidly weakening legs.</p></section>
+  <section class="card"><h3>Ease off when needed</h3><p>Bad sleep, illness, a rough period day, reps dropping twice, or joint/back irritation: +1–2 reps in the tank, drop the last set, walk instead of run. Then carry on.</p></section>
+  <section class="card"><h3>Food</h3><p>≈ 1,950 kcal and ≈ 100 g protein every day (4 × ~25 g). +150 kcal per hour of brisk walking, +250 per hour of hiking. Vitamin D 20 µg Oct–Apr. Never under ~1,900 on training days.</p></section>
+  <section class="card"><h3>Running</h3><p>Mostly easy (you can talk). No run more than ~10% longer than your longest in the last 30 days. At most one harder run a week, on a B day, from week 5.</p></section>`;
+}
+function viewSettings(){
+  const n = state.sessions.filter(s => s.done).length;
+  return `<h1>Settings</h1>
+  <section class="card"><div class="grid2"><div><label for="sn">Name</label><input id="sn" data-act="setting" data-f="name" value="${esc(state.settings.name)}"></div>
+  <div><label for="ss">Program start (Monday)</label><input id="ss" type="date" data-act="setting" data-f="start" value="${esc(state.settings.start)}"></div></div>
+  <div class="grid2" style="margin-top:10px"><div><label for="jf">Japan: leave</label><input id="jf" type="date" data-act="setting" data-f="japanFrom" value="${esc(state.settings.japanFrom || '')}"></div>
+  <div><label for="jt">Japan: first day home</label><input id="jt" type="date" data-act="setting" data-f="japanTo" value="${esc(state.settings.japanTo || '')}"></div></div>
+  <p class="muted" style="font-size:13px">Week numbers count from the start date. The program pauses during Japan (gym or no-gym sessions), then a restart week, then weeks 7–12. Clear the Japan dates if the trip is off.</p></section>
+  <section class="card"><h2>Backup</h2><p>Your data lives <b>only on this phone</b> (${n} sessions, ${state.body.length} body entries). Export a backup every week or two and keep it in Files, iCloud or email.</p>
+  <div class="stack" style="margin-top:10px"><button class="block primary" data-act="export">Export backup (.json)</button>
+  <button class="block" data-act="csv">Export sets as spreadsheet (.csv)</button>
+  <label class="btn" style="display:flex;justify-content:center;align-items:center;color:var(--ink);font-size:16px;margin:8px 0 0">Import backup<input type="file" accept="application/json,.json" data-act="import" style="display:none"></label></div></section>
+  <section class="card flat"><h3>Danger zone</h3><button class="block ghost danger" style="margin-top:8px" data-act="reset">Delete all data</button></section>
+  <p class="muted" style="font-size:13px">Halumi Logbook · program v1 · 9 Nov 2026</p>`;
+}
+
+/* ---------- Events ---------- */
+function setPath(obj, path, val){ const p = path.split('.'); let o2 = obj; while (p.length > 1) o2 = o2[p.shift()]; o2[p[0]] = val; }
+function bodyEntry(){ const t = isoToday(); let e = state.body.find(b => b.date === t); if (!e) { e = {date:t}; state.body.push(e); } return e; }
+function download(name, text, type){
+  const blob = new Blob([text], {type});
+  const file = typeof File === 'function' ? new File([blob], name, {type}) : null;
+  if (file && navigator.canShare && navigator.canShare({files:[file]})) {
+    navigator.share({files:[file], title:name}).catch(() => {});
+    return;
+  }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+function toCsv(){
+  const rows = [['date','week','session','slot','exercise','option','set','kg','reps','reps_left','back']];
+  doneSessions().forEach(s => s.ex.forEach(e => { const sl = slotDef(e.slot);
+    e.sets.forEach((x, j) => { if (x.done) rows.push([s.date, s.week, s.type, e.slot, sl.name, sl.opts[e.variant].n, j+1, x.kg, x.reps, e.rir ?? '', e.back]); }); }));
+  return rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+}
+document.addEventListener('click', (ev) => {
+  const b = ev.target.closest('[data-act]'); if (!b) return;
+  const act = b.dataset.act, d = state.draft, i = +b.dataset.i, j = +b.dataset.j;
+  switch (act) {
+    case 'tab': tab = b.dataset.tab; render(); window.scrollTo(0,0); return;
+    case 'pick': pick = b.dataset.type === nextType() ? null : b.dataset.type; render(); return;
+    case 'start': startSession(b.dataset.type, false); return;
+    case 'start-min': startSession(b.dataset.type, true); return;
+    case 'start-ng': startSession(b.dataset.type, false, true); return;
+    case 'start-ng-min': startSession(b.dataset.type, true, true); return;
+    case 'cancel': if (confirm('Discard this session? Nothing will be saved.')) { state.draft = null; save(); render(); } return;
+    case 'pain': {
+      const v = +b.dataset.val, f = b.dataset.field;
+      if (f.startsWith('morning:')) { const s = state.sessions.find(x => x.id === f.slice(8)); if (s) { s.back.morning = v; toast(`Saved · ${LIGHT_TXT[light(s)].split(' – ')[0]}`); } }
+      else d.back[f] = d.back[f] === v ? null : v;
+      break;
+    }
+    case 'done': {
+      const s = d.ex[i].sets[j];
+      if (!s.done) { const sug = suggestion(slotDef(d.ex[i].slot), d.ex[i].variant, planOf(d), d.date);
+        if (s.reps === '') { toast('Type the reps first'); return; }
+        if (s.kg === '' && sug.kg != null) s.kg = String(sug.kg); }
+      s.done = !s.done; break;
+    }
+    case 'addset': d.ex[i].sets.push({kg:'', reps:'', done:false}); break;
+    case 'rmset': if (d.ex[i].sets.length > 1) d.ex[i].sets.pop(); break;
+    case 'rir': d.ex[i].rir = d.ex[i].rir === +b.dataset.val ? null : +b.dataset.val; break;
+    case 'exback': d.ex[i].back = b.dataset.val; break;
+    case 'pillevel': d.pilates.level = +b.dataset.val; state.pilLevel = d.pilates.level; d.pilates.done = []; break;
+    case 'energy': bodyEntry().energy = +b.dataset.val; break;
+    case 'period-past': {
+      const v = ($('#pdate') || {}).value;
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(v || '') || v > isoToday()) { toast('Pick a date first'); return; }
+      let e = state.body.find(x => x.date === v); if (!e) { e = {date:v}; state.body.push(e); }
+      e.period = true; toast(`Period start saved: ${fmtDate(v)}`); break;
+    }
+    case 'finish': {
+      if (d.back.after == null && !confirm('No back rating after the session. Save anyway?')) return;
+      d.done = true; state.sessions.push(d); state.draft = null; save(); render(); window.scrollTo(0,0);
+      toast('Session saved 💪'); return;
+    }
+    case 'delsession': if (confirm('Delete this session for good?')) { state.sessions = state.sessions.filter(s => s.id !== b.dataset.id); } break;
+    case 'export': state.settings.lastExport = isoToday(); save(); download(`halumi-logbook-${isoToday()}.json`, JSON.stringify(state, null, 1), 'application/json'); render(); return;
+    case 'csv': download(`halumi-sets-${isoToday()}.csv`, toCsv(), 'text/csv'); return;
+    case 'reset': if (confirm('Delete ALL data on this phone? Export a backup first.') && confirm('Really delete everything? This cannot be undone.')) { state = DEFAULT_STATE(); } break;
+    default: return;
+  }
+  save(); render();
+});
+document.addEventListener('input', (ev) => {
+  const el = ev.target, act = el.dataset.act; if (!act) return;
+  const d = state.draft;
+  if (act === 'set') d.ex[+el.dataset.i].sets[+el.dataset.j][el.dataset.f] = el.value.trim();
+  else if (act === 'field' && el.tagName !== 'SELECT') setPath(d, el.dataset.f, el.value);
+  else if (act === 'body') { const v = el.value.trim(); bodyEntry()[el.dataset.f] = v === '' ? null : v; }
+  else if (act === 'setting' && el.type !== 'date') state.settings[el.dataset.f] = el.value;
+  else return;
+  save();
+});
+document.addEventListener('change', (ev) => {
+  const el = ev.target, act = el.dataset.act; if (!act) return;
+  const d = state.draft;
+  if (act === 'variant') { const i = +el.dataset.i; d.ex[i].variant = +el.value; state.choices[d.ex[i].slot] = +el.value; d.ex[i].back = 'ok'; }
+  else if (act === 'field' && el.tagName === 'SELECT') setPath(d, el.dataset.f, el.value);
+  else if (act === 'pil') { const k = +el.dataset.k; d.pilates.done = el.checked ? [...new Set([...d.pilates.done, k])] : d.pilates.done.filter(x => x !== k); save(); return; }
+  else if (act === 'period') { bodyEntry().period = el.checked; }
+  else if (act === 'setting' && el.type === 'date') { const f = el.dataset.f; if (/^\d{4}-\d{2}-\d{2}$/.test(el.value)) state.settings[f] = el.value; else if (f !== 'start' && el.value === '') state.settings[f] = ''; }
+  else if (act === 'import') {
+    const f = el.files && el.files[0]; if (!f) return;
+    f.text().then(t => {
+      let s; try { s = JSON.parse(t); } catch { toast('That file is not a valid backup'); return; }
+      if (!validState(s)) { toast('That file is not a Halumi Logbook backup'); return; }
+      if (!confirm(`Replace everything on this phone with the backup (${s.sessions.length} sessions)?`)) return;
+      try { localStorage.setItem(KEY + '-preimport', JSON.stringify(state)); } catch (e) { console.error(e); }
+      state = merge(s); save(); render(); toast('Backup restored');
+    }).catch(err => { console.error(err); toast('Could not read the file'); }).finally(() => { el.value = ''; });
+    return;
+  }
+  else return;
+  save(); render();
+});
+render();
+// Offline support when served from a web address (GitHub Pages).
+if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(e => console.error('Offline support failed', e));
+</script>
+</body>
+</html>
