@@ -240,6 +240,63 @@ select{-webkit-appearance:none;appearance:none;padding-right:38px;background:var
 nav.tabs{background:color-mix(in srgb,var(--bg) 80%,transparent);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-top:.5px solid var(--line)}
 nav.tabs button:active{transform:none;opacity:.6}
 .big-title{margin:6px 0 2px}
+
+/* ---------- Colour themes (Settings → Colour) ---------- */
+html[data-theme=burgundy]{--bg:#F7EFF1;--surface:#FFFFFF;--surface-2:#F2E6EA;--ink:#2A0910;--muted:#7A5A64;--line:#E8D6DC;--accent:#7A2440;--accent-2:#8C344D;--accent-soft:#F0DCE2;--wine:#5C1D32;--btn-1:#8C344D;--btn-2:#5C1D32;--glow:color-mix(in srgb,#8C344D 30%,transparent);--sd:#2A0910;--sm:#5C1D32;--sh:#8C344D}
+html[data-theme=burgundy] .hero{background:
+    radial-gradient(ellipse 70% 45% at 78% 12%,color-mix(in srgb,var(--sh) 60%,transparent),transparent 65%),
+    radial-gradient(ellipse 120% 40% at 20% 55%,rgba(255,200,215,.08),transparent 60%),
+    radial-gradient(ellipse 80% 60% at 8% 100%,rgba(8,0,4,.55),transparent 70%),
+    linear-gradient(118deg,var(--sd) 0%,var(--sm) 26%,var(--sh) 44%,color-mix(in srgb,var(--sm) 75%,var(--sh)) 56%,color-mix(in srgb,var(--sd) 55%,var(--sm)) 78%,var(--sd) 100%)}
+html[data-theme=burgundy] .hero button.primary,html[data-theme=burgundy] .hero .seg button.on{color:var(--sm)}
+html[data-theme=pink]{--bg:#FBF3F6;--surface:#FFFFFF;--surface-2:#F8ECF1;--ink:#2B1A22;--muted:#8C6F7C;--line:#F0DEE6;--accent:#D63F78;--accent-2:#F28AB2;--accent-soft:#FCE3EC;--wine:#6A1430;--btn-1:#D63F78;--btn-2:#F28AB2;--glow:color-mix(in srgb,#F28AB2 30%,transparent);--sd:#D63F78;--sm:#F28AB2;--sh:#FCE3EC}
+html[data-theme=pink] .hero{--ink:inherit;--muted:inherit;--surface:inherit;--surface-2:inherit;--line:inherit;--accent:inherit;--wine:inherit;--run:inherit;--run-soft:inherit;--pil:inherit;--pil-soft:inherit;--green:inherit;--green-soft:inherit;
+  background:radial-gradient(120% 90% at 100% 0%,var(--glow),transparent 60%),linear-gradient(160deg,var(--accent-soft),var(--surface) 78%);border:1px solid color-mix(in srgb,var(--accent) 18%,transparent)}
+html[data-theme=pink] .hero h1{color:var(--wine)}
+html[data-theme=pink] .hero button.primary{background:linear-gradient(135deg,var(--btn-1),var(--btn-2));color:#fff;box-shadow:0 12px 24px -12px var(--btn-2)}
+html[data-theme=pink] .hero .seg button.on{background:var(--btn-2);color:#fff}
+html[data-theme=pink] .hero input,html[data-theme=pink] .hero select,html[data-theme=pink] .hero textarea{color:var(--ink)}
+html[data-theme=sakura]{--bg:#FDF6F8;--surface:#FFFFFF;--surface-2:#FBEDF1;--ink:#3A2530;--muted:#93768A;--line:#F4E1E8;--accent:#C85A84;--accent-2:#E27FA3;--accent-soft:#FDE7EF;--wine:#A8456D;--btn-1:#E27FA3;--btn-2:#C85A84;--glow:color-mix(in srgb,#E27FA3 30%,transparent);--sd:#F7B6CB;--sm:#FDE7EF;--sh:#FFFFFF}
+html[data-theme=sakura] .hero{--ink:inherit;--muted:inherit;--surface:inherit;--surface-2:inherit;--line:inherit;--accent:inherit;--wine:inherit;--run:inherit;--run-soft:inherit;--pil:inherit;--pil-soft:inherit;--green:inherit;--green-soft:inherit;
+  background:radial-gradient(120% 90% at 100% 0%,var(--glow),transparent 60%),linear-gradient(160deg,var(--accent-soft),var(--surface) 78%);border:1px solid color-mix(in srgb,var(--accent) 18%,transparent)}
+html[data-theme=sakura] .hero h1{color:var(--wine)}
+html[data-theme=sakura] .hero button.primary{background:linear-gradient(135deg,var(--btn-1),var(--btn-2));color:#fff;box-shadow:0 12px 24px -12px var(--btn-2)}
+html[data-theme=sakura] .hero .seg button.on{background:var(--btn-2);color:#fff}
+html[data-theme=sakura] .hero input,html[data-theme=sakura] .hero select,html[data-theme=sakura] .hero textarea{color:var(--ink)}
+html[data-theme=rose]{--bg:#F7F1F0;--surface:#FFFFFF;--surface-2:#F0E6E5;--ink:#2E1D20;--muted:#7D6568;--line:#E7D9D8;--accent:#9C4F5E;--accent-2:#B8707D;--accent-soft:#EFDCDD;--wine:#6E3442;--btn-1:#B8707D;--btn-2:#8A4452;--glow:color-mix(in srgb,#B8707D 30%,transparent);--sd:#3A1E24;--sm:#8A4452;--sh:#C48A94}
+html[data-theme=rose] .hero{background:
+    radial-gradient(ellipse 70% 45% at 78% 12%,color-mix(in srgb,var(--sh) 60%,transparent),transparent 65%),
+    radial-gradient(ellipse 120% 40% at 20% 55%,rgba(255,200,215,.08),transparent 60%),
+    radial-gradient(ellipse 80% 60% at 8% 100%,rgba(8,0,4,.55),transparent 70%),
+    linear-gradient(118deg,var(--sd) 0%,var(--sm) 26%,var(--sh) 44%,color-mix(in srgb,var(--sm) 75%,var(--sh)) 56%,color-mix(in srgb,var(--sd) 55%,var(--sm)) 78%,var(--sd) 100%)}
+html[data-theme=rose] .hero button.primary,html[data-theme=rose] .hero .seg button.on{color:var(--sm)}
+html[data-theme=cherry]{--bg:#FBF1F2;--surface:#FFFFFF;--surface-2:#F6E4E6;--ink:#2A0A0F;--muted:#81585E;--line:#EFD5D9;--accent:#B3123A;--accent-2:#D02A52;--accent-soft:#F9DCE2;--wine:#8A0E2C;--btn-1:#D02A52;--btn-2:#9B0F31;--glow:color-mix(in srgb,#D02A52 30%,transparent);--sd:#3A0612;--sm:#9B0F31;--sh:#D8405F}
+html[data-theme=cherry] .hero{background:
+    radial-gradient(ellipse 70% 45% at 78% 12%,color-mix(in srgb,var(--sh) 60%,transparent),transparent 65%),
+    radial-gradient(ellipse 120% 40% at 20% 55%,rgba(255,200,215,.08),transparent 60%),
+    radial-gradient(ellipse 80% 60% at 8% 100%,rgba(8,0,4,.55),transparent 70%),
+    linear-gradient(118deg,var(--sd) 0%,var(--sm) 26%,var(--sh) 44%,color-mix(in srgb,var(--sm) 75%,var(--sh)) 56%,color-mix(in srgb,var(--sd) 55%,var(--sm)) 78%,var(--sd) 100%)}
+html[data-theme=cherry] .hero button.primary,html[data-theme=cherry] .hero .seg button.on{color:var(--sm)}
+html[data-theme=plum]{--bg:#F5F0F6;--surface:#FFFFFF;--surface-2:#EEE5F0;--ink:#22102A;--muted:#74607C;--line:#E4D7E8;--accent:#6B2D7A;--accent-2:#8A4A99;--accent-soft:#EADCF0;--wine:#3E1649;--btn-1:#8A4A99;--btn-2:#4E1E5C;--glow:color-mix(in srgb,#8A4A99 30%,transparent);--sd:#1E0A24;--sm:#4E1E5C;--sh:#8A4A99}
+html[data-theme=plum] .hero{background:
+    radial-gradient(ellipse 70% 45% at 78% 12%,color-mix(in srgb,var(--sh) 60%,transparent),transparent 65%),
+    radial-gradient(ellipse 120% 40% at 20% 55%,rgba(255,200,215,.08),transparent 60%),
+    radial-gradient(ellipse 80% 60% at 8% 100%,rgba(8,0,4,.55),transparent 70%),
+    linear-gradient(118deg,var(--sd) 0%,var(--sm) 26%,var(--sh) 44%,color-mix(in srgb,var(--sm) 75%,var(--sh)) 56%,color-mix(in srgb,var(--sd) 55%,var(--sm)) 78%,var(--sd) 100%)}
+html[data-theme=plum] .hero button.primary,html[data-theme=plum] .hero .seg button.on{color:var(--sm)}
+@media (prefers-color-scheme:dark){
+html[data-theme=burgundy]{--bg:#14060B;--surface:#1F0B12;--surface-2:#2A1019;--ink:#F8E9EE;--muted:#BF9AA6;--line:#3B1824;--accent:#E8899F;--accent-2:#F3AFC0;--accent-soft:#3A1020;--wine:#F6DCE4;--btn-1:#8C344D;--btn-2:#5C1D32;--glow:color-mix(in srgb,#8C344D 40%,transparent)}
+html[data-theme=pink]{--bg:#120B0F;--surface:#1C1318;--surface-2:#271A21;--ink:#FBEFF4;--muted:#B99AA8;--line:#35242D;--accent:#FF6FA3;--accent-2:#FFA3C4;--accent-soft:#45182C;--wine:#FFD3E2;--btn-1:#E8508A;--btn-2:#C93A70;--glow:color-mix(in srgb,#E8508A 40%,transparent)}
+html[data-theme=sakura]{--bg:#160E12;--surface:#21161B;--surface-2:#2C1E25;--ink:#FCEEF3;--muted:#C7A8B7;--line:#3B2A32;--accent:#FFA6C3;--accent-2:#FFC9DA;--accent-soft:#4A2636;--wine:#FFD9E6;--btn-1:#D9739B;--btn-2:#B5557D;--glow:color-mix(in srgb,#D9739B 40%,transparent)}
+html[data-theme=rose]{--bg:#140D0E;--surface:#201618;--surface-2:#2B1F21;--ink:#F6EAEA;--muted:#BFA4A7;--line:#3A2B2D;--accent:#E3A3AE;--accent-2:#F0C3CA;--accent-soft:#3A2226;--wine:#F5D9DD;--btn-1:#A8606D;--btn-2:#7E3C49;--glow:color-mix(in srgb,#A8606D 40%,transparent)}
+html[data-theme=cherry]{--bg:#13060A;--surface:#1F0A10;--surface-2:#2B0F17;--ink:#FBEAEE;--muted:#C59AA4;--line:#3F1822;--accent:#FF7A96;--accent-2:#FFA8BA;--accent-soft:#3F0E1B;--wine:#FFD6DF;--btn-1:#C21E46;--btn-2:#8E0C2C;--glow:color-mix(in srgb,#C21E46 40%,transparent)}
+html[data-theme=plum]{--bg:#0F0712;--surface:#1A0D1F;--surface-2:#251429;--ink:#F3E9F6;--muted:#B39CBC;--line:#36203D;--accent:#D7A0E6;--accent-2:#E8C4F2;--accent-soft:#2E1437;--wine:#F0DDF6;--btn-1:#8A4A99;--btn-2:#4E1E5C;--glow:color-mix(in srgb,#8A4A99 40%,transparent)}
+}
+.themes{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.themes button{display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px 6px 10px;min-height:96px;border-radius:var(--radius-m);background:var(--surface-2);border:1.5px solid transparent;font-size:14px;font-weight:600}
+.themes button.on{border-color:var(--accent);background:var(--surface)}
+.themes .sw{width:44px;height:44px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(255,255,255,.15),0 6px 14px -8px rgba(0,0,0,.5)}
+.themes button.on .sw{box-shadow:0 0 0 3px var(--surface),0 0 0 5px var(--accent)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -715,11 +772,15 @@ function renderTabs(){
   const names = {today:'Today', food:'Food', body:'Body', history:'History', program:'Program', settings:'Settings'};
   $('#tabs').innerHTML = Object.keys(names).map(k => `<button data-act="tab" data-tab="${k}" class="${tab===k?'on':''}" aria-current="${tab===k?'page':'false'}">${ICON[k]}<span>${names[k]}</span></button>`).join('');
 }
+const THEMES = {"burgundy": {"n": "Burgundy", "g": "linear-gradient(135deg,#8C344D,#5C1D32 45%,#2A0910)", "bg": "#F7EFF1", "bgd": "#14060B"}, "pink": {"n": "Pink", "g": "linear-gradient(135deg,#FCE3EC,#F28AB2 55%,#D63F78)", "bg": "#FBF3F6", "bgd": "#120B0F"}, "sakura": {"n": "Sakura", "g": "linear-gradient(135deg,#FDE7EF,#E27FA3 55%,#C85A84)", "bg": "#FDF6F8", "bgd": "#160E12"}, "rose": {"n": "Dusty rose", "g": "linear-gradient(135deg,#C48A94,#8A4452 45%,#3A1E24)", "bg": "#F7F1F0", "bgd": "#140D0E"}, "cherry": {"n": "Cherry", "g": "linear-gradient(135deg,#D8405F,#9B0F31 45%,#3A0612)", "bg": "#FBF1F2", "bgd": "#13060A"}, "plum": {"n": "Plum", "g": "linear-gradient(135deg,#8A4A99,#4E1E5C 45%,#1E0A24)", "bg": "#F5F0F6", "bgd": "#0F0712"}};
+function applyTheme(){ const k = THEMES[state.settings.theme] ? state.settings.theme : 'burgundy'; document.documentElement.dataset.theme = k;
+  document.querySelectorAll('meta[name=theme-color]').forEach(m => { m.content = (m.media || '').includes('dark') ? THEMES[k].bgd : THEMES[k].bg; }); }
 const TAB_TITLES = {today:'Today', food:'Food', history:'History', body:'Body', program:'Program', settings:'Settings'};
 function onScroll(){ const tb = $('#topbar'); if (!tb) return; $('#topbar-title').textContent = tab === 'today' && state.draft ? `Session ${state.draft.type}` : TAB_TITLES[tab]; tb.classList.toggle('on', window.scrollY > 52); }
 window.addEventListener('scroll', onScroll, {passive:true});
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 function render(){
+  applyTheme();
   renderTabs();
   const view = {today:viewToday, food:viewFood, history:viewHistory, body:viewBody, program:viewProgram, settings:viewSettings}[tab];
   $('#app').innerHTML = view();
@@ -998,7 +1059,10 @@ function viewProgram(){
 }
 function viewSettings(){
   const n = state.sessions.filter(s => s.done).length;
+  const cur = THEMES[state.settings.theme] ? state.settings.theme : 'burgundy';
   return `<h1>Settings</h1>
+  <section class="card"><h2>Colour</h2><p class="muted" style="font-size:14px">Pick the look you feel like. Change it any time.</p>
+  <div class="themes">${Object.entries(THEMES).map(([k, t]) => `<button class="${k === cur ? 'on' : ''}" data-act="theme" data-val="${k}" aria-pressed="${k === cur}"><span class="sw" style="background:${t.g}"></span>${esc(t.n)}</button>`).join('')}</div></section>
   <section class="card"><div class="grid2"><div><label for="sn">Name</label><input id="sn" data-act="setting" data-f="name" value="${esc(state.settings.name)}"></div>
   <div><label for="ss">Program start (Monday)</label><input id="ss" type="date" data-act="setting" data-f="start" value="${esc(state.settings.start)}"></div></div>
   <div class="grid2" style="margin-top:10px"><div><label for="jf">Japan: leave</label><input id="jf" type="date" data-act="setting" data-f="japanFrom" value="${esc(state.settings.japanFrom || '')}"></div>
@@ -1046,6 +1110,7 @@ document.addEventListener('click', (ev) => {
     case 'mdel': { const m0 = state.meals.find(x => x.id === b.dataset.id); if (!m0) return; state.meals = state.meals.filter(x => x !== m0); if (!state.meals.length) mealEdit = false; toast(`Removed: ${m0.n}`); break; }
     case 'medit': mealEdit = !mealEdit; render(); return;
     case 'mall': mealsAll = !mealsAll; render(); return;
+    case 'theme': state.settings.theme = b.dataset.val; toast(`Colour: ${THEMES[b.dataset.val].n}`); break;
     case 'calday': calSel = b.dataset.date; render(); return;
     case 'calwk': calOff += +b.dataset.val; calSel = null; render(); return;
     case 'fdel': foodDay(foodDate || isoToday()).items.splice(+b.dataset.k, 1); break;
