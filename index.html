@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Logbook">
-<meta name="theme-color" content="#FBF3F6" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#120B0F" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F7EFF1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#14060B" media="(prefers-color-scheme: dark)">
 <title>Halumi Logbook</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
@@ -152,10 +152,99 @@ nav.tabs button.on span{font-weight:750}
 .meal small{font-size:12px}
 .meal.del{border-color:var(--red);color:var(--red)}
 .meal.del b::before{content:"✕  "}
+
+/* ---------- Alignment + refinement pass ---------- */
+:root{--wine:#6A1430}
+@media (prefers-color-scheme:dark){:root{--wine:#FFD3E2}}
+h1{color:var(--wine)}
+.eyebrow{text-transform:none;letter-spacing:0;font-size:13px;font-weight:650}
+/* Fields in a row: labels share the top, inputs share the bottom line */
+.grid2>div,.grid3>div{display:flex;flex-direction:column;min-width:0}
+.grid2>div>label,.grid3>div>label{flex:1 0 auto}
+label{line-height:1.3}
+input,select{height:48px;min-height:48px;padding:0 14px;border-radius:var(--radius-s);font-size:17px}
+textarea{padding:10px 14px;font-size:17px}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);background:var(--surface)}
+input::placeholder{color:color-mix(in srgb,var(--muted) 70%,transparent)}
+input[type=date]{-webkit-appearance:none;appearance:none;display:block;text-align:left;line-height:48px}
+input[type=date]::-webkit-date-and-time-value{text-align:left;margin:0}
+.sets input{height:46px;min-height:46px;text-align:center;padding:0 6px}
+/* Custom checkbox */
+input[type=checkbox]{-webkit-appearance:none;appearance:none;flex:0 0 26px;width:26px!important;height:26px!important;min-height:26px!important;padding:0;margin:0;border:1.5px solid color-mix(in srgb,var(--muted) 55%,transparent);border-radius:8px;background:var(--surface-2);display:grid;place-items:center;cursor:pointer}
+input[type=checkbox]:checked{background:var(--accent) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center/16px no-repeat;border-color:transparent}
+.checklist input[type=checkbox]:checked{background-color:var(--pil)}
+.check-row{display:flex;gap:12px;align-items:center;margin-top:14px;color:var(--ink);font-size:16px;font-weight:550}
+/* Hierarchy: only the session card glows; supporting cards sit quieter */
+.card:not(.hero){box-shadow:0 1px 2px rgba(120,30,70,.04)}
+@media (prefers-color-scheme:dark){.card:not(.hero){box-shadow:none}}
+.hero{box-shadow:var(--shadow)}
+button.small{min-height:40px}
+.inline-add{display:flex;gap:10px;align-items:flex-end;margin-top:10px}
+.inline-add>div{flex:1;min-width:0}
+.inline-add button{height:48px;min-height:48px}
+
+/* ---------- Burgundy satin theme ---------- */
+:root{
+  --bg:#F7EFF1; --surface:#FFFFFF; --surface-2:#F2E6EA; --ink:#2A0910; --muted:#7A5A64; --line:#E8D6DC;
+  --accent:#7A2440; --accent-2:#8C344D; --accent-ink:#fff; --accent-soft:#F0DCE2; --wine:#5C1D32;
+  --btn-1:#8C344D; --btn-2:#5C1D32;
+  --glow:rgba(140,52,77,.22);
+  --shadow:0 1px 2px rgba(42,9,16,.06),0 18px 40px -20px rgba(42,9,16,.55);
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#14060B; --surface:#1F0B12; --surface-2:#2A1019; --ink:#F8E9EE; --muted:#BF9AA6; --line:#3B1824;
+    --accent:#E8899F; --accent-2:#F3AFC0; --accent-ink:#2A0910; --accent-soft:#3A1020; --wine:#F6DCE4;
+    --glow:rgba(140,52,77,.35);
+    --shadow:0 1px 0 rgba(0,0,0,.4),0 18px 40px -20px rgba(0,0,0,.8);
+  }
+}
+html{background:var(--bg);-webkit-tap-highlight-color:transparent;touch-action:manipulation;-webkit-font-smoothing:antialiased}
+body{background:radial-gradient(120% 50% at 50% -8%,var(--accent-soft),transparent 62%) no-repeat,var(--bg)}
+button,.btn,nav.tabs,label,.eyebrow,.pill{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+button:active{transform:scale(.97);opacity:.82}
+button.primary,.wk .bd.done,.toast{background:linear-gradient(135deg,var(--btn-1),var(--btn-2))}
+button.primary,.wk .bd.done,.toast{color:#fff}
+button.primary{box-shadow:0 12px 24px -12px var(--btn-2)}
+.seg button.on{background:var(--btn-2);color:#fff}
+@media (prefers-color-scheme:dark){.seg button.on{background:var(--btn-1)}}
+input[type=checkbox]:checked{background-color:var(--btn-1)}
+select{-webkit-appearance:none;appearance:none;padding-right:38px;background:var(--surface-2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238C344D' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 10l5 5 5-5'/%3E%3C/svg%3E") right 12px center/18px no-repeat;text-overflow:ellipsis}
+
+/* The satin card: the session hero, styled like folded burgundy silk */
+.hero{
+  --ink:#FFF4F7; --muted:rgba(255,236,242,.72); --surface:rgba(255,255,255,.08); --surface-2:rgba(255,255,255,.13);
+  --line:rgba(255,255,255,.2); --accent:#FFC9D7; --wine:#FFFFFF;
+  --run:#BFEDEA; --run-soft:rgba(127,194,198,.22); --pil:#E7D2FF; --pil-soft:rgba(201,166,234,.22);
+  --green:#9FE6BC; --green-soft:rgba(111,209,155,.22);
+  color:var(--ink);border:none;
+  background:
+    radial-gradient(ellipse 70% 45% at 78% 12%,rgba(214,120,150,.38),transparent 65%),
+    radial-gradient(ellipse 120% 40% at 20% 55%,rgba(255,190,210,.10),transparent 60%),
+    radial-gradient(ellipse 80% 60% at 8% 100%,rgba(10,0,4,.55),transparent 70%),
+    linear-gradient(118deg,#2A0910 0%,#5C1D32 26%,#8C344D 44%,#6A2139 56%,#3A0F1D 78%,#2A0910 100%);
+  box-shadow:var(--shadow);
+}
+.hero h1{color:#fff}
+.hero button.primary{background:#FFF6F8;color:#5C1D32;box-shadow:0 12px 26px -12px rgba(0,0,0,.6)}
+.hero .seg button.on{background:#FFF6F8;color:#5C1D32}
+.hero input,.hero select,.hero textarea{color:#fff}
+.hero .seg.pain button.on.g,.hero .seg.pain button.on.y,.hero .seg.pain button.on.r{color:#fff}
+
+/* iOS-style compact bar that fades in when the large title scrolls away */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:6;padding-top:env(safe-area-inset-top);height:calc(46px + env(safe-area-inset-top));display:flex;align-items:flex-end;justify-content:center;
+  background:color-mix(in srgb,var(--bg) 78%,transparent);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:.5px solid var(--line);opacity:0;transform:translateY(-4px);transition:opacity .2s ease,transform .2s ease;pointer-events:none}
+.topbar.on{opacity:1;transform:none;pointer-events:auto}
+.topbar span{font-weight:650;font-size:17px;padding-bottom:12px;color:var(--ink)}
+nav.tabs{background:color-mix(in srgb,var(--bg) 80%,transparent);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-top:.5px solid var(--line)}
+nav.tabs button:active{transform:none;opacity:.6}
+.big-title{margin:6px 0 2px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
+<header class="topbar" id="topbar" aria-hidden="true"><span id="topbar-title"></span></header>
 <main id="app"></main>
 <nav class="tabs" aria-label="Main"><div class="in" id="tabs"></div></nav>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -610,6 +699,7 @@ const slotDef = (key) => (key[0] === 'n' ? NOGYM[key[1]] : SLOTS[key[0]]).find(s
 
 /* ---------- Views ---------- */
 let tab = 'today';
+const scrollMem = {};
 let calOff = 0, calSel = null; // week calendar: weeks from this week, selected day
 let mealEdit = false, mealsAll = false;
 let pick = null; // session type chosen manually for today (overrides the rotation once)
@@ -622,13 +712,18 @@ const ICON = {
   settings:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></svg>'
 };
 function renderTabs(){
-  const names = {today:'Today', food:'Food', history:'History', body:'Body', program:'Program', settings:'Settings'};
+  const names = {today:'Today', food:'Food', body:'Body', history:'History', program:'Program', settings:'Settings'};
   $('#tabs').innerHTML = Object.keys(names).map(k => `<button data-act="tab" data-tab="${k}" class="${tab===k?'on':''}" aria-current="${tab===k?'page':'false'}">${ICON[k]}<span>${names[k]}</span></button>`).join('');
 }
+const TAB_TITLES = {today:'Today', food:'Food', history:'History', body:'Body', program:'Program', settings:'Settings'};
+function onScroll(){ const tb = $('#topbar'); if (!tb) return; $('#topbar-title').textContent = tab === 'today' && state.draft ? `Session ${state.draft.type}` : TAB_TITLES[tab]; tb.classList.toggle('on', window.scrollY > 52); }
+window.addEventListener('scroll', onScroll, {passive:true});
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 function render(){
   renderTabs();
   const view = {today:viewToday, food:viewFood, history:viewHistory, body:viewBody, program:viewProgram, settings:viewSettings}[tab];
   $('#app').innerHTML = view();
+  onScroll();
 }
 function painSeg(field, value){
   return `<div class="seg pain" role="group">` + Array.from({length:11}, (_, i) => {
@@ -704,16 +799,16 @@ function viewActivity(today){
   const day = state.food[today] || {items:[], walkH:0, hikeH:0, longRun:false};
   const t = foodTargets(day), extra = t.kcal - FOOD_BASE.kcal;
   return `<section class="card"><div class="spread"><h3>Extra activity today</h3>${extra ? `<span class="pill green">+${extra} kcal</span>` : ''}</div>
-    <p class="muted" style="font-size:13px">Daily 30-min walks are already in the base. These raise today's food target${extra ? ` to <b>${t.kcal.toLocaleString('en-GB')} kcal</b>` : ''}.</p>
-    <div class="grid2" style="margin-top:8px"><div><label for="fw">Walks of 60+ min (hours)</label><input id="fw" inputmode="decimal" data-act="factivity" data-f="walkH" value="${esc(day.walkH || '')}" placeholder="0"></div>
+    <p class="muted" style="font-size:13px">Walks over an hour and hikes. Your daily 30-min walk is already counted. These raise today's food target${extra ? ` to <b>${t.kcal.toLocaleString('en-GB')} kcal</b>` : ''}.</p>
+    <div class="grid2" style="margin-top:8px"><div><label for="fw">Long walks (hours)</label><input id="fw" inputmode="decimal" data-act="factivity" data-f="walkH" value="${esc(day.walkH || '')}" placeholder="0"></div>
     <div><label for="fh">Hiking (hours)</label><input id="fh" inputmode="decimal" data-act="factivity" data-f="hikeH" value="${esc(day.hikeH || '')}" placeholder="0"></div></div>
-    <label style="margin-top:10px;display:flex;gap:10px;align-items:center;color:var(--ink)"><input type="checkbox" style="width:22px;min-height:22px;accent-color:var(--accent)" data-act="flongrun" ${day.longRun ? 'checked' : ''}> Ran 35+ min today (+150 kcal)</label></section>`;
+    <label class="check-row"><input type="checkbox" data-act="flongrun" ${day.longRun ? 'checked' : ''}> Ran 35+ min today (+150 kcal)</label></section>`;
 }
 function viewToday(){
   const today = isoToday();
   const p = planFor(today);
   const name = esc(state.settings.name || 'you');
-  let h = state.draft ? '' : viewWeek(today);
+  let h = state.draft ? '' : `<h1 class="big-title">Today</h1><p class="muted">${new Date(today+'T12:00:00').toLocaleDateString('en-GB',{weekday:'long', day:'numeric', month:'long'})}</p>` + viewWeek(today);
   // next-morning back check
   const pending = doneSessions().filter(s => s.back && s.back.morning == null && s.date < today).pop();
   if (pending && !state.draft) h += `<section class="card"><p class="eyebrow">Morning check</p><h3>How's your back this morning after Session ${pending.type} (${fmtDate(pending.date)})?</h3><p class="muted">0 = nothing, 10 = worst. Before that session it was ${pending.back.before ?? '–'}.</p>${painSeg('morning:'+pending.id, null)}</section>`;
@@ -735,7 +830,7 @@ function viewToday(){
     <h1>Session ${type}</h1><p style="font-size:18px;margin-top:2px">${info.name}</p>
     <div class="row wrap" style="margin:10px 0 14px"><span class="pill">4 weight exercises</span><span class="pill pil">Pilates ${info.pil}</span><span class="pill run">Run ${fmtRun(r[type])}</span></div>
     ${restartNote}${startBtns}
-    <div class="row" style="margin-top:8px"><button class="block ghost" data-act="${noGym ? 'start-ng-min' : 'start-min'}" data-type="${type}">Busy day: minimum session (50–60 min)</button></div>
+    <div class="row" style="margin-top:8px"><button class="block ghost" data-act="${noGym ? 'start-ng-min' : 'start-min'}" data-type="${type}">Short on time: minimum session</button></div>
     <div class="spread" style="margin-top:10px"><small>Different session today?</small><div class="seg">${ORDER.map(t => `<button class="small ${t===type?'on':''}" data-act="pick" data-type="${t}">${t}</button>`).join('')}</div></div>
     ${p.over ? '<p class="muted">The 12 weeks are done: re-test, measure, and plan the next block. The logbook keeps going with week-12 settings.</p>' : ''}</section>`;
   h += viewActivity(today);
@@ -793,8 +888,8 @@ function viewDraft(){
   h += `<section class="card block-pil"><div class="spread"><div><p class="eyebrow">Pilates · ${d.minimum ? 'short version, 15 min' : flow.time}</p><h2>${esc(flow.name)}</h2><small>Level ${lvl} · props: ${esc(flow.props)}</small></div>
     <div class="seg">${[1,2].map(l => `<button class="${lvl===l?'on':''}" data-act="pillevel" data-val="${l}">L${l}</button>`).join('')}</div></div>
     <ul class="checklist">${idxs.map(k => { const mv = flow.moves[k]; const nm = (lvl === 2 ? mv.l2 : mv.l1)[0];
-      return `<li><input type="checkbox" id="p-${k}" aria-label="Done: ${esc(nm)}" data-act="pil" data-k="${k}" ${d.pilates.done.includes(k)?'checked':''}><span style="color:var(--ink);font-weight:500">${flowMove(mv, lvl)}</span></li>`; }).join('')}</ul>
-    <div class="grid2" style="margin-top:8px"><div><label for="pmin">Minutes</label><input id="pmin" inputmode="decimal" data-act="field" data-f="pilates.min" value="${esc(d.pilates.min)}"></div></div>
+      return `<li><input type="checkbox" id="p-${k}" style="margin-top:1px" aria-label="Done: ${esc(nm)}" data-act="pil" data-k="${k}" ${d.pilates.done.includes(k)?'checked':''}><span style="color:var(--ink);font-weight:500">${flowMove(mv, lvl)}</span></li>`; }).join('')}</ul>
+    <div class="grid2" style="margin-top:12px"><div><label for="pmin">Pilates minutes</label><input id="pmin" inputmode="decimal" data-act="field" data-f="pilates.min" value="${esc(d.pilates.min)}"></div></div>
     <p class="muted" style="font-size:13px">Neutral spine, ribs down. No roll-ups, twists or crunches. Take the last reps of each move close to tired. ${lvl === 1 && p.w >= 5 ? '<b>From week 5: switch to L2 once Level 1 feels green.</b>' : 'Move to Level 2 (from week 5) once Level 1 feels green.'}</p></section>`;
   // Run
   const r = runFor(p);
@@ -847,19 +942,7 @@ function viewFood(){
     <div class="grid2" style="margin-top:8px"><div><label for="ck">kcal</label><input id="ck" inputmode="decimal"></div><div><label for="cp">Protein (g)</label><input id="cp" inputmode="decimal"></div></div>
     <button class="block" style="margin-top:10px" data-act="fcustom">Add</button></section>
   <section class="card"><h3>Last 7 days</h3><div class="grid2" style="margin-top:8px"><div><div class="big-num">${avg('kcal')}</div><small>avg kcal/day, ${date === isoToday() ? 'last 7 days before today' : '7 days'} (${week.length} logged)</small></div><div><div class="big-num">${avg('p')}${week.length ? ' g' : ''}</div><small>avg protein/day</small></div></div></section>
-  <details class="card flat"><summary><h3>When to eat</h3></summary><table style="margin-top:8px"><tbody>
-    <tr><td><b>Morning session</b></td><td>Breakfast 1.5–2 h before (overnight oats). Banana 30–45 min before if breakfast was early. Lunch box within ~1 h after.</td></tr>
-    <tr><td><b>Afternoon session</b></td><td>Lunch box ~12:00. Snack 13:30–14:00 (rye bread + mackerel + banana). Dinner box 17:00–17:30.</td></tr>
-    <tr><td><b>Rest day</b></td><td>Breakfast, lunch box, snack, dinner box.</td></tr>
-    <tr><td><b>Coffee</b></td><td>Last cup by ~14:00. Water 1.6–1.9 L + ~0.5 L per session.</td></tr></tbody></table></details>
-  <details class="card flat"><summary><h3>Meal-prep boxes (raw weights)</h3></summary><table style="margin-top:8px"><tbody>
-    <tr><td><b>Box A</b><br><small>≈ 475 kcal · 35 g</small></td><td>110 g chicken, 60 g jasmine rice (dry), 200 g frozen veg, 5 g oil, 20 ml teriyaki</td></tr>
-    <tr><td><b>Box B</b><br><small>≈ 565 kcal · 35 g</small></td><td>110 g minced beef 8–12%, 60 g pasta (dry), 200 g chopped tomatoes, 100 g onion + carrot, 4 g oil, 15 g cheese</td></tr>
-    <tr><td><b>Box C</b><br><small>≈ 580 kcal · 40 g</small></td><td>120 g salmon or halibut (or 150 g shrimp), 250 g potatoes, 200 g broccoli or beans, 5 g oil, skyr-mustard-dill sauce. Cod or shrimp ≈ 430 kcal: add 100 g potatoes</td></tr>
-    <tr><td><b>Cook days</b></td><td>Sunday: 4 Box A + 4 Box B. Wednesday: 3 + 3. One fewer A or B for every Box C. Bolognese: total sauce ÷ 8.4 = your portion; Nick's = yours × 1.1.</td></tr></tbody></table></details>
-  <details class="card flat"><summary><h3>Your weekly shopping extras</h3></summary><p style="margin-top:8px">Chicken ~0.8 kg · minced beef ~0.8 kg · fish or shrimp 250–500 g · rice + pasta ~0.45 kg each · frozen veg 2–2.5 kg · chopped tomatoes 4 cans · onion + carrot ~0.7 kg · cheese ~100 g · potatoes ~1 kg · oats ~0.4 kg · skyr 1.5–2 kg · milk 1 L · frozen berries ~1 kg · rye bread 1 loaf · eggs 10 · canned mackerel 3 · bananas + apples ~14 · nuts ~150 g</p></details>
-  <details class="card flat"><summary><h3>Supplements</h3></summary><p style="margin-top:8px"><b>Vitamin D3</b> 20 µg daily Oct–Apr: take. <b>Creatine</b> 3 g daily: optional (+0.5–1 kg water on the scale). <b>Protein powder</b>: only on days you'd fall short. <b>Iron</b>: only if a blood test shows low ferritin, as your doctor says. <b>Omega-3</b>: only if you eat fatty fish less than once a week.</p></details>
-  <details class="card flat"><summary><h3>Adjusting (after 3 weeks)</h3></summary><p style="margin-top:8px">Weight stable, waist same or smaller, lifts up: change nothing. Weight up >0.25 kg/week for 3 weeks and waist up: −150 kcal. Weight down >0.25 kg/week: +150–250 kcal. Energy still low after 4 weeks: check ferritin and sleep, +150–200 kcal. <b>Period late (35+ days) or missed: +200–300 kcal now, and see a doctor if missed.</b> Never under ~1,600 kcal; training days ~1,900+.</p></details>`;
+`;
 }
 function viewHistory(){
   const d = doneSessions().slice().reverse();
@@ -898,8 +981,8 @@ function viewBody(){
       <div><label for="bh">Hips (cm)</label><input id="bh" inputmode="decimal" data-act="body" data-f="hips" value="${esc(e.hips ?? '')}"></div>
       <div><label for="ba">Upper arm (cm)</label><input id="ba" inputmode="decimal" data-act="body" data-f="arm" value="${esc(e.arm ?? '')}"></div></div>
     <label style="margin-top:10px">Energy today (1–5)</label><div class="seg">${[1,2,3,4,5].map(v => `<button class="${e.energy===v?'on':''}" data-act="energy" data-val="${v}">${v}</button>`).join('')}</div>
-    <label style="margin-top:12px;display:flex;gap:10px;align-items:center;color:var(--ink)"><input type="checkbox" style="width:22px;min-height:22px" data-act="period" ${e.period?'checked':''}> Period started today</label>
-    <div class="row" style="margin-top:8px"><div style="flex:1"><label for="pdate">Or log an earlier period start</label><input id="pdate" type="date" max="${today}"></div><button class="small" style="align-self:flex-end" data-act="period-past">Add</button></div>
+    <label class="check-row"><input type="checkbox" data-act="period" ${e.period?'checked':''}> Period started today</label>
+    <div class="inline-add"><div><label for="pdate">Or add an earlier start date</label><input id="pdate" type="date" max="${today}"></div><button data-act="period-past">Add</button></div>
     <p class="muted" style="font-size:13px">Saved automatically.</p></section>
     <section class="card flat"><h3>Log</h3><table><thead><tr><th>Date</th><th>kg</th><th>Waist</th><th>Energy</th><th></th></tr></thead><tbody>
     ${sorted.slice(0,40).map(b => `<tr><td>${fmtDate(b.date)}</td><td>${esc(b.weight ?? '')}</td><td>${esc(b.waist ?? '')}</td><td>${b.energy ?? ''}</td><td>${b.period ? '●' : ''}</td></tr>`).join('') || '<tr><td colspan="5" class="muted">Nothing yet</td></tr>'}</tbody></table></section>`;
@@ -911,14 +994,7 @@ function viewProgram(){
   <tr><td>1–2</td><td>Learn</td><td>2</td><td>3–4</td></tr><tr><td>3–4</td><td>Settle in</td><td>3 / 2</td><td>2–3</td></tr>
   <tr><td>5–8</td><td>Build</td><td>3</td><td>2 (machines 1–2)</td></tr><tr><td>9–10</td><td>Peak</td><td>3–4</td><td>1–2 (last set 0–1)</td></tr>
   <tr><td>11</td><td>Easy week</td><td>−1</td><td>3</td></tr><tr><td>12</td><td>Re-test</td><td>3–4</td><td>1–2</td></tr></tbody></table></section>
-  <section class="card"><h3>No gym today?</h3><p>Tap <b>No gym today</b> on the Today screen: the weights become bodyweight and band versions, the Pilates flow stays the same. Works any day. In Japan (23 Dec – 4 Feb): 3 sets, 2 reps left, and pack a mini-band, a long band and the ball. Back home: a few rest days, a restart week (~10% lighter), then weeks 7–12.</p></section>
-  <section class="card"><h3>Pilates is the main part</h3><p>One flow per session: A lower body & glutes, B upper body & arms, C full body & core. Neutral spine, ribs down, no roll-ups, twists or crunches. Finish each move clearly tired. Level 2 from week 5 once Level 1 feels green; if one Level 2 move is too hard, do its Level 1 version.</p></section>
-  <section class="card"><h3>Add reps, then weight</h3><p>Stay at a weight until every set reaches the top of the range. Then go up the smallest step (DB +1–2 kg, machine +1 plate, bar +2.5 kg) and start at the bottom again. The logbook shows you when.</p></section>
-  <section class="card"><h3>Back traffic light</h3><p>🟢 0–2: keep going. 🟡 3–5 and fine by next morning: OK, no increases on that exercise this week. 🔴 over 5, sharp, down the leg, or worse next morning: stop that exercise, use the option one step more back-friendly next time.</p>
-  <p><b>Emergency (112):</b> numbness in the saddle area, bladder/bowel changes, symptoms in both legs, rapidly weakening legs.</p></section>
-  <section class="card"><h3>Ease off when needed</h3><p>Bad sleep, illness, a rough period day, reps dropping twice, or joint/back irritation: +1–2 reps in the tank, drop the last set, walk instead of run. Then carry on.</p></section>
-  <section class="card"><h3>Food</h3><p>≈ 1,950 kcal and ≈ 100 g protein every day (4 × ~25 g). +150 kcal per hour of brisk walking, +250 per hour of hiking. Vitamin D 20 µg Oct–Apr. Never under ~1,900 on training days.</p></section>
-  <section class="card"><h3>Running</h3><p>Mostly easy (you can talk). No run more than ~10% longer than your longest in the last 30 days. At most one harder run a week, on a B day, from week 5.</p></section>`;
+`;
 }
 function viewSettings(){
   const n = state.sessions.filter(s => s.done).length;
@@ -956,10 +1032,13 @@ function toCsv(){
   return rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
 }
 document.addEventListener('click', (ev) => {
+  if (ev.target.closest('#topbar')) { window.scrollTo({top:0, behavior:'smooth'}); return; }
   const b = ev.target.closest('[data-act]'); if (!b) return;
   const act = b.dataset.act, d = state.draft, i = +b.dataset.i, j = +b.dataset.j;
   switch (act) {
-    case 'tab': tab = b.dataset.tab; foodDate = null; calOff = 0; calSel = null; mealEdit = false; render(); window.scrollTo(0,0); return;
+    case 'tab': { const nt = b.dataset.tab;
+      if (nt === tab) { window.scrollTo({top:0, behavior:'smooth'}); return; }
+      scrollMem[tab] = window.scrollY; tab = nt; foodDate = null; calOff = 0; calSel = null; mealEdit = false; render(); window.scrollTo(0, scrollMem[nt] || 0); onScroll(); return; }
     case 'pick': pick = b.dataset.type === nextType() ? null : b.dataset.type; render(); return;
     case 'fday': { const cur = foodDate || isoToday(); const nx = addDays(cur, +b.dataset.val); foodDate = nx >= isoToday() ? null : nx; render(); return; }
     case 'madd': { const m0 = state.meals.find(x => x.id === b.dataset.id); if (!m0) return; const dt = foodDate || isoToday();
