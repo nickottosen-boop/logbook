@@ -10,6 +10,8 @@
 <meta name="theme-color" content="#F7EFF1" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#14060B" media="(prefers-color-scheme: dark)">
 <title>Halumi Logbook</title>
+<script>(function(){var m='auto';try{m=(JSON.parse(localStorage.getItem('halumi-logbook-v1'))||{}).settings.mode||'auto'}catch(e){}
+var d=m==='dark'||(m!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.dataset.mode=d?'dark':'light'})();</script>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
 <style>
@@ -25,8 +27,8 @@
   --font-display:system-ui,-apple-system,"SF Pro Display","Segoe UI",Roboto,sans-serif;
   --font-body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
 }
-@media (prefers-color-scheme:dark){
-  :root{
+/* dark (system or manual) */
+  :root:where([data-mode=dark]){
     --bg:#120B0F; --surface:#1C1318; --surface-2:#271A21; --ink:#FBEFF4; --muted:#B99AA8; --line:#35242D;
     --accent:#FF6FA3; --accent-2:#FFA3C4; --accent-ink:#2A0A17; --accent-soft:#45182C;
     --run:#7FC2C6; --run-soft:#16302F; --pil:#C9A6EA; --pil-soft:#2D1F3B;
@@ -34,7 +36,8 @@
     --shadow:0 1px 0 rgba(0,0,0,.35),0 14px 34px -18px rgba(0,0,0,.7);
     --glow:rgba(255,111,163,.22);
   }
-}
+
+html[data-mode=light]{color-scheme:light}html[data-mode=dark]{color-scheme:dark}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 var(--font-body);padding-bottom:calc(84px + env(safe-area-inset-bottom))}
@@ -155,7 +158,7 @@ nav.tabs button.on span{font-weight:750}
 
 /* ---------- Alignment + refinement pass ---------- */
 :root{--wine:#6A1430}
-@media (prefers-color-scheme:dark){:root{--wine:#FFD3E2}}
+/* dark (system or manual) */:root:where([data-mode=dark]){--wine:#FFD3E2}
 h1{color:var(--wine)}
 .eyebrow{text-transform:none;letter-spacing:0;font-size:13px;font-weight:650}
 /* Fields in a row: labels share the top, inputs share the bottom line */
@@ -176,7 +179,7 @@ input[type=checkbox]:checked{background:var(--accent) url("data:image/svg+xml,%3
 .check-row{display:flex;gap:12px;align-items:center;margin-top:14px;color:var(--ink);font-size:16px;font-weight:550}
 /* Hierarchy: only the session card glows; supporting cards sit quieter */
 .card:not(.hero){box-shadow:0 1px 2px rgba(120,30,70,.04)}
-@media (prefers-color-scheme:dark){.card:not(.hero){box-shadow:none}}
+/* dark (system or manual) */:where(html[data-mode=dark]) .card:not(.hero){box-shadow:none}
 .hero{box-shadow:var(--shadow)}
 button.small{min-height:40px}
 .inline-add{display:flex;gap:10px;align-items:flex-end;margin-top:10px}
@@ -191,14 +194,14 @@ button.small{min-height:40px}
   --glow:rgba(140,52,77,.22);
   --shadow:0 1px 2px rgba(42,9,16,.06),0 18px 40px -20px rgba(42,9,16,.55);
 }
-@media (prefers-color-scheme:dark){
-  :root{
+/* dark (system or manual) */
+  :root:where([data-mode=dark]){
     --bg:#14060B; --surface:#1F0B12; --surface-2:#2A1019; --ink:#F8E9EE; --muted:#BF9AA6; --line:#3B1824;
     --accent:#E8899F; --accent-2:#F3AFC0; --accent-ink:#2A0910; --accent-soft:#3A1020; --wine:#F6DCE4;
     --glow:rgba(140,52,77,.35);
     --shadow:0 1px 0 rgba(0,0,0,.4),0 18px 40px -20px rgba(0,0,0,.8);
   }
-}
+
 html{background:var(--bg);-webkit-tap-highlight-color:transparent;touch-action:manipulation;-webkit-font-smoothing:antialiased}
 body{background:radial-gradient(120% 50% at 50% -8%,var(--accent-soft),transparent 62%) no-repeat,var(--bg)}
 button,.btn,nav.tabs,label,.eyebrow,.pill{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
@@ -207,7 +210,7 @@ button.primary,.wk .bd.done,.toast{background:linear-gradient(135deg,var(--btn-1
 button.primary,.wk .bd.done,.toast{color:#fff}
 button.primary{box-shadow:0 12px 24px -12px var(--btn-2)}
 .seg button.on{background:var(--btn-2);color:#fff}
-@media (prefers-color-scheme:dark){.seg button.on{background:var(--btn-1)}}
+/* dark (system or manual) */:where(html[data-mode=dark]) .seg button.on{background:var(--btn-1)}
 input[type=checkbox]:checked{background-color:var(--btn-1)}
 select{-webkit-appearance:none;appearance:none;padding-right:38px;background:var(--surface-2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238C344D' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 10l5 5 5-5'/%3E%3C/svg%3E") right 12px center/18px no-repeat;text-overflow:ellipsis}
 
@@ -284,14 +287,14 @@ html[data-theme=plum] .hero{background:
     radial-gradient(ellipse 80% 60% at 8% 100%,rgba(8,0,4,.55),transparent 70%),
     linear-gradient(118deg,var(--sd) 0%,var(--sm) 26%,var(--sh) 44%,color-mix(in srgb,var(--sm) 75%,var(--sh)) 56%,color-mix(in srgb,var(--sd) 55%,var(--sm)) 78%,var(--sd) 100%)}
 html[data-theme=plum] .hero button.primary,html[data-theme=plum] .hero .seg button.on{color:var(--sm)}
-@media (prefers-color-scheme:dark){
-html[data-theme=burgundy]{--bg:#14060B;--surface:#1F0B12;--surface-2:#2A1019;--ink:#F8E9EE;--muted:#BF9AA6;--line:#3B1824;--accent:#E8899F;--accent-2:#F3AFC0;--accent-soft:#3A1020;--wine:#F6DCE4;--btn-1:#8C344D;--btn-2:#5C1D32;--glow:color-mix(in srgb,#8C344D 40%,transparent)}
-html[data-theme=pink]{--bg:#120B0F;--surface:#1C1318;--surface-2:#271A21;--ink:#FBEFF4;--muted:#B99AA8;--line:#35242D;--accent:#FF6FA3;--accent-2:#FFA3C4;--accent-soft:#45182C;--wine:#FFD3E2;--btn-1:#E8508A;--btn-2:#C93A70;--glow:color-mix(in srgb,#E8508A 40%,transparent)}
-html[data-theme=sakura]{--bg:#160E12;--surface:#21161B;--surface-2:#2C1E25;--ink:#FCEEF3;--muted:#C7A8B7;--line:#3B2A32;--accent:#FFA6C3;--accent-2:#FFC9DA;--accent-soft:#4A2636;--wine:#FFD9E6;--btn-1:#D9739B;--btn-2:#B5557D;--glow:color-mix(in srgb,#D9739B 40%,transparent)}
-html[data-theme=rose]{--bg:#140D0E;--surface:#201618;--surface-2:#2B1F21;--ink:#F6EAEA;--muted:#BFA4A7;--line:#3A2B2D;--accent:#E3A3AE;--accent-2:#F0C3CA;--accent-soft:#3A2226;--wine:#F5D9DD;--btn-1:#A8606D;--btn-2:#7E3C49;--glow:color-mix(in srgb,#A8606D 40%,transparent)}
-html[data-theme=cherry]{--bg:#13060A;--surface:#1F0A10;--surface-2:#2B0F17;--ink:#FBEAEE;--muted:#C59AA4;--line:#3F1822;--accent:#FF7A96;--accent-2:#FFA8BA;--accent-soft:#3F0E1B;--wine:#FFD6DF;--btn-1:#C21E46;--btn-2:#8E0C2C;--glow:color-mix(in srgb,#C21E46 40%,transparent)}
-html[data-theme=plum]{--bg:#0F0712;--surface:#1A0D1F;--surface-2:#251429;--ink:#F3E9F6;--muted:#B39CBC;--line:#36203D;--accent:#D7A0E6;--accent-2:#E8C4F2;--accent-soft:#2E1437;--wine:#F0DDF6;--btn-1:#8A4A99;--btn-2:#4E1E5C;--glow:color-mix(in srgb,#8A4A99 40%,transparent)}
-}
+/* dark (system or manual) */
+html[data-theme=burgundy]:where([data-mode=dark]){--bg:#14060B;--surface:#1F0B12;--surface-2:#2A1019;--ink:#F8E9EE;--muted:#BF9AA6;--line:#3B1824;--accent:#E8899F;--accent-2:#F3AFC0;--accent-soft:#3A1020;--wine:#F6DCE4;--btn-1:#8C344D;--btn-2:#5C1D32;--glow:color-mix(in srgb,#8C344D 40%,transparent)}
+html[data-theme=pink]:where([data-mode=dark]){--bg:#120B0F;--surface:#1C1318;--surface-2:#271A21;--ink:#FBEFF4;--muted:#B99AA8;--line:#35242D;--accent:#FF6FA3;--accent-2:#FFA3C4;--accent-soft:#45182C;--wine:#FFD3E2;--btn-1:#E8508A;--btn-2:#C93A70;--glow:color-mix(in srgb,#E8508A 40%,transparent)}
+html[data-theme=sakura]:where([data-mode=dark]){--bg:#160E12;--surface:#21161B;--surface-2:#2C1E25;--ink:#FCEEF3;--muted:#C7A8B7;--line:#3B2A32;--accent:#FFA6C3;--accent-2:#FFC9DA;--accent-soft:#4A2636;--wine:#FFD9E6;--btn-1:#D9739B;--btn-2:#B5557D;--glow:color-mix(in srgb,#D9739B 40%,transparent)}
+html[data-theme=rose]:where([data-mode=dark]){--bg:#140D0E;--surface:#201618;--surface-2:#2B1F21;--ink:#F6EAEA;--muted:#BFA4A7;--line:#3A2B2D;--accent:#E3A3AE;--accent-2:#F0C3CA;--accent-soft:#3A2226;--wine:#F5D9DD;--btn-1:#A8606D;--btn-2:#7E3C49;--glow:color-mix(in srgb,#A8606D 40%,transparent)}
+html[data-theme=cherry]:where([data-mode=dark]){--bg:#13060A;--surface:#1F0A10;--surface-2:#2B0F17;--ink:#FBEAEE;--muted:#C59AA4;--line:#3F1822;--accent:#FF7A96;--accent-2:#FFA8BA;--accent-soft:#3F0E1B;--wine:#FFD6DF;--btn-1:#C21E46;--btn-2:#8E0C2C;--glow:color-mix(in srgb,#C21E46 40%,transparent)}
+html[data-theme=plum]:where([data-mode=dark]){--bg:#0F0712;--surface:#1A0D1F;--surface-2:#251429;--ink:#F3E9F6;--muted:#B39CBC;--line:#36203D;--accent:#D7A0E6;--accent-2:#E8C4F2;--accent-soft:#2E1437;--wine:#F0DDF6;--btn-1:#8A4A99;--btn-2:#4E1E5C;--glow:color-mix(in srgb,#8A4A99 40%,transparent)}
+
 .themes{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
 .themes button{display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px 6px 10px;min-height:96px;border-radius:var(--radius-m);background:var(--surface-2);border:1.5px solid transparent;font-size:14px;font-weight:600}
 .themes button.on{border-color:var(--accent);background:var(--surface)}
@@ -828,8 +831,13 @@ function renderTabs(){
   $('#tabs').innerHTML = Object.keys(names).map(k => `<button data-act="tab" data-tab="${k}" class="${tab===k?'on':''}" aria-current="${tab===k?'page':'false'}">${ICON[k]}<span>${names[k]}</span></button>`).join('');
 }
 const THEMES = {"burgundy": {"n": "Burgundy", "g": "linear-gradient(135deg,#8C344D,#5C1D32 45%,#2A0910)", "bg": "#F7EFF1", "bgd": "#14060B"}, "pink": {"n": "Pink", "g": "linear-gradient(135deg,#FCE3EC,#F28AB2 55%,#D63F78)", "bg": "#FBF3F6", "bgd": "#120B0F"}, "sakura": {"n": "Sakura", "g": "linear-gradient(135deg,#FDE7EF,#E27FA3 55%,#C85A84)", "bg": "#FDF6F8", "bgd": "#160E12"}, "rose": {"n": "Dusty rose", "g": "linear-gradient(135deg,#C48A94,#8A4452 45%,#3A1E24)", "bg": "#F7F1F0", "bgd": "#140D0E"}, "cherry": {"n": "Cherry", "g": "linear-gradient(135deg,#D8405F,#9B0F31 45%,#3A0612)", "bg": "#FBF1F2", "bgd": "#13060A"}, "plum": {"n": "Plum", "g": "linear-gradient(135deg,#8A4A99,#4E1E5C 45%,#1E0A24)", "bg": "#F5F0F6", "bgd": "#0F0712"}};
+const DARK_MQ = matchMedia('(prefers-color-scheme: dark)');
+const MODES = {auto:'Auto', light:'Light', dark:'Dark'};
+const curMode = () => MODES[state.settings.mode] ? state.settings.mode : 'auto';
 function applyTheme(){ const k = THEMES[state.settings.theme] ? state.settings.theme : 'burgundy'; document.documentElement.dataset.theme = k;
-  document.querySelectorAll('meta[name=theme-color]').forEach(m => { m.content = (m.media || '').includes('dark') ? THEMES[k].bgd : THEMES[k].bg; }); }
+  const m = curMode(), dark = m === 'dark' || (m === 'auto' && DARK_MQ.matches); document.documentElement.dataset.mode = dark ? 'dark' : 'light';
+  document.querySelectorAll('meta[name=theme-color]').forEach(el => { el.content = m === 'auto' ? ((el.media || '').includes('dark') ? THEMES[k].bgd : THEMES[k].bg) : (dark ? THEMES[k].bgd : THEMES[k].bg); }); }
+DARK_MQ.addEventListener && DARK_MQ.addEventListener('change', () => { if (curMode() === 'auto') applyTheme(); });
 const TAB_TITLES = {today:'Today', food:'Food', history:'History', body:'Body', program:'Program', settings:'Settings'};
 function onScroll(){ const tb = $('#topbar'); if (!tb) return; $('#topbar-title').textContent = tab === 'today' && state.draft ? `Session ${state.draft.type}` : TAB_TITLES[tab]; tb.classList.toggle('on', window.scrollY > 52); }
 window.addEventListener('scroll', onScroll, {passive:true});
@@ -1123,7 +1131,9 @@ function viewSettings(){
   const cur = THEMES[state.settings.theme] ? state.settings.theme : 'burgundy';
   return `<h1>Settings</h1>
   <section class="card"><h2>Colour</h2><p class="muted" style="font-size:14px">Pick the look you feel like. Change it any time.</p>
-  <div class="themes">${Object.entries(THEMES).map(([k, t]) => `<button class="${k === cur ? 'on' : ''}" data-act="theme" data-val="${k}" aria-pressed="${k === cur}"><span class="sw" style="background:${t.g}"></span>${esc(t.n)}</button>`).join('')}</div></section>
+  <div class="themes">${Object.entries(THEMES).map(([k, t]) => `<button class="${k === cur ? 'on' : ''}" data-act="theme" data-val="${k}" aria-pressed="${k === cur}"><span class="sw" style="background:${t.g}"></span>${esc(t.n)}</button>`).join('')}</div>
+  <div class="spread" style="margin-top:14px"><small>Light or dark</small><div class="seg nowrap">${Object.entries(MODES).map(([k, n]) => `<button class="small ${k === curMode() ? 'on' : ''}" data-act="mode" data-val="${k}" aria-pressed="${k === curMode()}">${n}</button>`).join('')}</div></div>
+  <p class="muted" style="font-size:13px;margin-top:8px">Auto follows your phone's setting.</p></section>
   <section class="card"><div class="grid2"><div><label for="sn">Name</label><input id="sn" data-act="setting" data-f="name" value="${esc(state.settings.name)}"></div>
   <div><label for="ss">Program start (Monday)</label><input id="ss" type="date" data-act="setting" data-f="start" value="${esc(state.settings.start)}"></div></div>
   <div class="grid2" style="margin-top:10px"><div><label for="jf">Japan: leave</label><input id="jf" type="date" data-act="setting" data-f="japanFrom" value="${esc(state.settings.japanFrom || '')}"></div>
@@ -1308,6 +1318,7 @@ document.addEventListener('click', (ev) => {
     case 'medit': mealEdit = !mealEdit; render(); return;
     case 'mall': mealsAll = !mealsAll; render(); return;
     case 'theme': state.settings.theme = b.dataset.val; toast(`Colour: ${THEMES[b.dataset.val].n}`); break;
+    case 'mode': if (!MODES[b.dataset.val]) return; state.settings.mode = b.dataset.val; toast(b.dataset.val === 'auto' ? 'Mode: follows your phone' : `Mode: ${MODES[b.dataset.val]}`); break;
     case 'calday': calSel = b.dataset.date; render(); return;
     case 'calwk': calOff += +b.dataset.val; calSel = null; render(); return;
     case 'scantext': { const v = ($('#scantext').value || '').trim(); if (!v) { toast('Type what you ate first'); return; } runScan({text:v.slice(0, 500)}, null); return; }
