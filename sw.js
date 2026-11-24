@@ -1,6 +1,6 @@
 // Keeps the logbook working offline (e.g. no signal at the gym).
 // Network first, so updates show up; falls back to the cached copy when offline.
-const CACHE = 'halumi-logbook-v1';
+const CACHE = 'halumi-logbook-v2';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './apple-touch-icon.png', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)));

@@ -7,28 +7,32 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Logbook">
-<meta name="theme-color" content="#F4EEE6">
+<meta name="theme-color" content="#FBF3F6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#120B0F" media="(prefers-color-scheme: dark)">
 <title>Halumi Logbook</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
 <style>
 :root{
-  --bg:#F4EEE6; --surface:#FFFDF9; --surface-2:#EFE6DA; --ink:#211B17; --muted:#6F655C; --line:#E2D7C9;
-  --accent:#B4513A; --accent-ink:#fff; --accent-soft:#F3DCD3;
-  --run:#2F5D62; --run-soft:#D9E7E6; --pil:#6B5A8E; --pil-soft:#E5DFEF;
-  --green:#3C7A4A; --green-soft:#DCEBDD; --yellow:#A87A12; --yellow-soft:#F4E7C2; --red:#B23A2E; --red-soft:#F4D6D1;
-  --radius-l:22px; --radius-m:14px; --radius-s:10px;
-  --shadow:0 1px 0 rgba(33,27,23,.04),0 8px 24px -12px rgba(33,27,23,.18);
-  --font-display:ui-rounded,"SF Pro Rounded","Nunito","Avenir Next",system-ui,sans-serif;
+  --bg:#FBF3F6; --surface:#FFFFFF; --surface-2:#F8ECF1; --ink:#2B1A22; --muted:#8C6F7C; --line:#F0DEE6;
+  --accent:#D63F78; --accent-2:#F28AB2; --accent-ink:#fff; --accent-soft:#FCE3EC;
+  --run:#2F6F73; --run-soft:#DCEEEE; --pil:#8A5BB0; --pil-soft:#EFE4F7;
+  --green:#2F8A5B; --green-soft:#DDF1E5; --yellow:#A9770C; --yellow-soft:#FBEFCF; --red:#C8372D; --red-soft:#FADBD7;
+  --radius-l:24px; --radius-m:16px; --radius-s:12px;
+  --shadow:0 1px 2px rgba(120,30,70,.05),0 14px 34px -18px rgba(170,40,100,.30);
+  --glow:rgba(242,138,178,.42);
+  --font-serif:"New York",ui-serif,"Iowan Old Style","Palatino",Georgia,serif;
+  --font-display:system-ui,-apple-system,"SF Pro Display","Segoe UI",Roboto,sans-serif;
   --font-body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
 }
 @media (prefers-color-scheme:dark){
   :root{
-    --bg:#171412; --surface:#221E1B; --surface-2:#2B2622; --ink:#F3ECE4; --muted:#A79C91; --line:#38312B;
-    --accent:#E07A5F; --accent-ink:#1A1310; --accent-soft:#4A2A22;
-    --run:#7FB3B8; --run-soft:#1F3436; --pil:#B3A2D6; --pil-soft:#2E2840;
-    --green:#7DBE8A; --green-soft:#1F3324; --yellow:#E2B84E; --yellow-soft:#3A3018; --red:#F08473; --red-soft:#43221D;
-    --shadow:0 1px 0 rgba(0,0,0,.3),0 8px 24px -12px rgba(0,0,0,.6);
+    --bg:#120B0F; --surface:#1C1318; --surface-2:#271A21; --ink:#FBEFF4; --muted:#B99AA8; --line:#35242D;
+    --accent:#FF6FA3; --accent-2:#FFA3C4; --accent-ink:#2A0A17; --accent-soft:#45182C;
+    --run:#7FC2C6; --run-soft:#16302F; --pil:#C9A6EA; --pil-soft:#2D1F3B;
+    --green:#6FD19B; --green-soft:#16301F; --yellow:#E9C05A; --yellow-soft:#382C12; --red:#FF8A7D; --red-soft:#421C19;
+    --shadow:0 1px 0 rgba(0,0,0,.35),0 14px 34px -18px rgba(0,0,0,.7);
+    --glow:rgba(255,111,163,.22);
   }
 }
 *{box-sizing:border-box}
@@ -104,6 +108,50 @@ details>summary::-webkit-details-marker{display:none}
 .light-dot{width:12px;height:12px;border-radius:50%;display:inline-block}
 .big-num{font-family:var(--font-display);font-size:28px;font-weight:800;line-height:1}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- Pink premium layer ---------- */
+body{background:radial-gradient(130% 60% at 50% -10%,var(--accent-soft),transparent 60%) no-repeat,var(--bg);background-attachment:scroll;font-variant-numeric:tabular-nums}
+h1{font-family:var(--font-serif);font-weight:700;letter-spacing:-.02em;font-size:32px}
+h2{font-weight:700;letter-spacing:-.015em}
+h3{font-weight:650;letter-spacing:-.01em}
+.big-num{font-family:var(--font-serif);font-weight:700;letter-spacing:-.02em}
+.card{border-color:var(--line)}
+.hero{background:radial-gradient(120% 90% at 100% 0%,var(--glow),transparent 60%),linear-gradient(160deg,var(--accent-soft),var(--surface) 78%);border:1px solid color-mix(in srgb,var(--accent) 16%,transparent)}
+.hero .eyebrow,.accent-eyebrow{color:var(--accent)}
+button.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:0 10px 22px -10px var(--accent);letter-spacing:.01em}
+.seg button.on{background:var(--accent);color:var(--accent-ink)}
+.pill{background:color-mix(in srgb,var(--surface) 60%,var(--surface-2))}
+nav.tabs button{border-radius:14px}
+nav.tabs button.on{color:var(--accent)}
+nav.tabs button.on svg{filter:drop-shadow(0 4px 8px var(--glow))}
+nav.tabs button.on span{font-weight:750}
+.toast{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:var(--accent-ink);box-shadow:0 10px 24px -10px var(--accent)}
+.sug b{color:var(--accent)}
+/* Week calendar */
+.wk{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:12px}
+.wk button{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:5px;padding:8px 0 9px;min-height:82px;min-width:0;border-radius:16px;border:1.5px solid transparent;background:var(--surface-2);font-weight:600;color:var(--ink)}
+.wk .dn{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:700}
+.wk .dd{font-size:18px;font-weight:700;line-height:1}
+.wk .bd{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:800}
+.wk .bd.done{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:var(--accent-ink)}
+.wk .bd.plan{border:1.5px dashed var(--accent);color:var(--accent)}
+.wk .bd.rest{color:var(--muted);font-size:16px}
+.wk .bd.miss{color:var(--muted);font-size:12px}
+.wk button.past{opacity:.72}
+.wk button.today{background:var(--surface);box-shadow:0 0 0 3px var(--accent-soft)}
+.wk button.today .dd{color:var(--accent)}
+.wk button.sel{border-color:var(--accent);opacity:1}
+.wk button.jp{background-image:linear-gradient(var(--pil),var(--pil));background-size:40% 3px;background-position:50% calc(100% - 4px);background-repeat:no-repeat}
+.wkd{margin-top:12px;padding:12px 14px;border-radius:var(--radius-m);background:var(--surface-2)}
+.wkd h3{margin-top:2px}
+/* Saved meals */
+.meals{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.seg.nowrap{flex-wrap:nowrap;flex-shrink:0}
+.meal{display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:2px;padding:9px 12px;min-height:52px;border-radius:var(--radius-m);background:var(--surface-2);border:1px solid var(--line);max-width:100%}
+.meal b{font-weight:650;font-size:15px;line-height:1.25}
+.meal small{font-size:12px}
+.meal.del{border-color:var(--red);color:var(--red)}
+.meal.del b::before{content:"✕  "}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -349,13 +397,6 @@ const RUN_JAPAN = {A:'15–25 or a walk', B:'25–35', C:'walk', wk:'50–80 (wa
 const RUN_RESTART = RUN[3];
 const fmtRun = (s) => /\d$/.test(s) ? `${s} min` : s;
 const FOOD_BASE = {kcal:1950, protein:100};
-const FOOD_ITEMS = [
-  ['Breakfast', [['Overnight oats',430,30],['2 eggs on rye + skyr with berries',360,32],['Oatmeal with milk + berries',355,16],['Pancakes with skyr + berries',450,25]]],
-  ['Meal-prep boxes', [['Box A – teriyaki chicken',475,35],['Box B – bolognese',565,35],['Box C – salmon or halibut',580,40],['Box C – cod or shrimp',430,38],['Fresh fish, potatoes + veg',580,40],['Stew or fish soup with potatoes',600,35]]],
-  ['Snacks', [['Rye bread + mackerel + banana',310,12],['Rye bread + egg + fruit',250,9],['Skyr 200 g + berries',170,22],['Banana + 10 g nuts',150,3],['Nuts 15 g',90,3],['Apple',80,0],['Banana',105,1],['Carrot or cucumber sticks',30,1]]],
-  ['Extras', [['2 slices rye + mackerel or egg + fruit',300,15],['Chocolate milk 300 ml + banana',300,11],['Hike pack',600,18],['Protein shake (25 g whey)',100,20]]],
-  ['Japan', [['Onigiri (salmon)',180,6],['Konbini salad chicken',110,24],['Boiled egg',72,6],['Yogurt cup or drink',100,5],['Edamame 100 g',120,11],['Teishoku set with grilled fish',700,35],['Ramen with egg + chashu',800,30]]]
-];
 const RUN_KINDS = ['easy','strides','short intervals','intervals','test','walk / bike','skipped'];
 
 /* ---------- Helpers ---------- */
@@ -366,12 +407,30 @@ const isoToday = () => { const d = new Date(); return `${d.getFullYear()}-${pad(
 const dayDiff = (a, b) => Math.round((Date.parse(b+'T12:00:00') - Date.parse(a+'T12:00:00')) / 864e5);
 const fmtDate = (iso) => new Date(iso+'T12:00:00').toLocaleDateString('en-GB',{weekday:'short', day:'numeric', month:'short'});
 const num = (v) => { const x = parseFloat(String(v).replace(',','.')); return Number.isFinite(x) ? x : null; };
+const r1 = (x) => Math.round(x * 10) / 10;
+// "62,5" → "62.5" so numbers are stored the same way whatever the keyboard gives.
+const normDec = (v) => { const t = String(v ?? '').trim(); return /^\d+,\d+$/.test(t) ? t.replace(',', '.') : t; };
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
 function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 1800); }
 
 /* ---------- State ---------- */
-const DEFAULT_STATE = () => ({v:1, settings:{name:'Halumi', start:'2026-11-09', japanFrom:'2026-12-23', japanTo:'2027-02-04'}, sessions:[], draft:null, choices:{}, body:[], food:{}});
-const merge = (s) => { const d = DEFAULT_STATE(); const food = s.food && typeof s.food === 'object' && !Array.isArray(s.food) ? s.food : {}; return {...d, ...s, food, settings:{...d.settings, ...s.settings}}; };
+const DEFAULT_STATE = () => ({v:1, settings:{name:'Halumi', start:'2026-11-09', japanFrom:'2026-12-23', japanTo:'2027-02-04'}, sessions:[], draft:null, choices:{}, body:[], food:{}, meals:[]});
+const merge = (s) => { const d = DEFAULT_STATE(); const food = s.food && typeof s.food === 'object' && !Array.isArray(s.food) ? s.food : {}; const meals = Array.isArray(s.meals) ? s.meals.filter(validMeal) : buildMeals(food); return {...d, ...s, food, meals, settings:{...d.settings, ...s.settings}}; };
+// Saved meals: everything she has logged herself, so she can tap it again next time.
+function validMeal(x){ return x && typeof x.n === 'string' && Number.isFinite(x.kcal) && Number.isFinite(x.p); }
+const mealKey = (n) => String(n).trim().toLowerCase();
+function buildMeals(food){
+  const map = new Map();
+  Object.keys(food).sort().forEach(date => (food[date].items || []).forEach(x => { if (!validMeal(x)) return; const k = mealKey(x.n);
+    const m0 = map.get(k) || {id:uid(), n:x.n, kcal:x.kcal, p:x.p, c:0, last:date}; m0.c++; m0.last = date; m0.kcal = x.kcal; m0.p = x.p; map.set(k, m0); }));
+  return [...map.values()];
+}
+function upsertMeal(n, kcal, p, date){
+  let m0 = state.meals.find(x => mealKey(x.n) === mealKey(n));
+  if (!m0) { m0 = {id:uid(), n, kcal, p, c:0, last:date}; state.meals.push(m0); }
+  m0.n = n; m0.kcal = kcal; m0.p = p; m0.c++; if (!m0.last || date > m0.last) m0.last = date;
+}
+const sortedMeals = () => state.meals.slice().sort((a, b) => b.c - a.c || String(b.last).localeCompare(String(a.last)) || a.n.localeCompare(b.n));
 let loadWarning = false;
 let state = load();
 function load(){
@@ -551,6 +610,8 @@ const slotDef = (key) => (key[0] === 'n' ? NOGYM[key[1]] : SLOTS[key[0]]).find(s
 
 /* ---------- Views ---------- */
 let tab = 'today';
+let calOff = 0, calSel = null; // week calendar: weeks from this week, selected day
+let mealEdit = false, mealsAll = false;
 let pick = null; // session type chosen manually for today (overrides the rotation once)
 const ICON = {
   today:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 8v8M18 8v8M3 10v4M21 10v4M6 12h12"/></svg>',
@@ -581,11 +642,78 @@ function weekRunTotal(date){
   return doneSessions().filter(s => mondayOf(s.date) === wk).reduce((a, s) => a + (num(s.run?.min) || 0), 0)
     + (state.draft && mondayOf(state.draft.date) === wk ? (num(state.draft.run.min) || 0) : 0);
 }
+
+// Upcoming sessions: every other day, continuing the A → B → C rotation.
+function projectSessions(from, to){
+  const map = {}, today = isoToday(), done = doneSessions();
+  let cur = today;
+  const last = done.length ? done[done.length - 1].date : null;
+  if (last && addDays(last, 2) > cur) cur = addDays(last, 2);
+  if (!done.length && state.settings.start > cur) cur = state.settings.start;
+  let type = cur === today && pick ? pick : nextType();
+  while (cur <= to) { if (cur >= from) map[cur] = type; type = ORDER[(ORDER.indexOf(type) + 1) % 3]; cur = addDays(cur, 2); }
+  return map;
+}
+function viewWeek(today){
+  const mon = addDays(mondayOf(today), calOff * 7), sun = addDays(mon, 6);
+  const days = Array.from({length:7}, (_, k) => addDays(mon, k));
+  const proj = projectSessions(mon, sun);
+  const J = japanDates();
+  const inJp = (d) => J && d >= J.jf && d < J.jt;
+  const sel = calSel && calSel >= mon && calSel <= sun ? calSel : (calOff === 0 ? today : mon);
+  const doneOn = (d) => doneSessions().filter(s => s.date === d);
+  const cells = days.map(d => {
+    const ds = doneOn(d), planned = d >= today && !ds.length ? proj[d] : null;
+    const badge = ds.length ? `<span class="bd done">${ds.map(x => x.type).join('')}</span>`
+      : planned ? `<span class="bd plan">${planned}</span>` : `<span class="bd rest">·</span>`;
+    const cls = [d < today ? 'past' : '', d === today ? 'today' : '', d === sel ? 'sel' : '', inJp(d) ? 'jp' : ''].join(' ');
+    const wd = new Date(d + 'T12:00:00').toLocaleDateString('en-GB', {weekday:'short'});
+    return `<button class="${cls}" data-act="calday" data-date="${d}" aria-pressed="${d === sel}" aria-label="${fmtDate(d)}${ds.length ? ', done' : planned ? ', Session ' + planned : ', rest'}"><span class="dn">${wd.slice(0, 2)}</span><span class="dd">${+d.slice(8)}</span>${badge}</button>`;
+  }).join('');
+  // Detail for the selected day
+  const ds = doneOn(sel), planned = sel >= today && !ds.length ? proj[sel] : null;
+  const pl = planFor(sel);
+  const when = sel === today ? 'Today' : fmtDate(sel);
+  let det;
+  if (ds.length) det = ds.map(x => { const l = light(x);
+    return `<p class="eyebrow accent-eyebrow">${when} · done ✓</p><h3>Session ${x.type} – ${SESSION_INFO[x.type].name}</h3>
+      <div class="row wrap" style="margin-top:8px"><span class="pill"><span class="light-dot" style="background:var(--${l === 'none' ? 'line' : l})"></span>Back ${l === 'none' ? '–' : l}</span>${x.pilates.min ? `<span class="pill pil">Pilates ${esc(x.pilates.min)} min</span>` : ''}${x.run.min ? `<span class="pill run">Run ${esc(x.run.min)} min</span>` : ''}</div>`; }).join('');
+  else if (planned) det = `<p class="eyebrow accent-eyebrow">${when} · ${esc(pl.label)}</p><h3>Session ${planned} – ${SESSION_INFO[planned].name}</h3>
+      <div class="row wrap" style="margin-top:8px"><span class="pill">4 weight exercises</span><span class="pill pil">Pilates ${SESSION_INFO[planned].pil}</span><span class="pill run">Run ${fmtRun(runFor(pl)[planned])}</span></div>
+      ${inJp(sel) ? '<p class="muted" style="font-size:13px;margin-top:8px">Japan: use <b>No gym today</b> if there is no gym.</p>' : ''}`;
+  else if (sel < today) det = `<p class="eyebrow">${when}</p><h3>Rest day</h3><p class="muted" style="font-size:14px">No session logged.</p>`;
+  else det = `<p class="eyebrow">${when}${inJp(sel) ? ' · Japan' : ''}</p><h3>Rest day</h3><p class="muted" style="font-size:14px">Your daily walk is enough. Extra long walks or a hike? Log them under Extra activity.</p>`;
+  const wkDone = doneSessions().filter(s => s.date >= mon && s.date <= sun);
+  const wkPlanned = Object.keys(proj).filter(d => !doneOn(d).length).length;
+  const title = calOff === 0 ? 'This week' : calOff === 1 ? 'Next week' : calOff === -1 ? 'Last week' : `${fmtDate(mon)} – ${fmtDate(sun)}`;
+  const pm = planFor(mon);
+  const lights = wkDone.map(light);
+  return `<section class="card"><div class="spread"><button class="small ghost" data-act="calwk" data-val="-1" aria-label="Previous week">‹</button>
+      <div style="text-align:center"><p class="eyebrow">${esc(planFor(calOff === 0 ? today : mon).label)}</p><h2>${title}</h2></div>
+      <button class="small ghost" data-act="calwk" data-val="1" aria-label="Next week">›</button></div>
+    <div class="wk">${cells}</div>
+    <div class="wkd">${det}</div>
+    <div class="grid3" style="margin-top:12px">
+      <div><div class="big-num">${wkDone.length}<span class="muted" style="font-size:16px"> / ${wkDone.length + wkPlanned}</span></div><small>sessions</small></div>
+      <div><div class="big-num">${weekRunTotal(mon)}</div><small>run min · ${runFor(pm).wk}</small></div>
+      <div><div class="row" style="min-height:28px">${lights.length ? lights.map(l => `<span class="light-dot" style="background:var(--${l === 'none' ? 'line' : l})" title="${l}"></span>`).join('') : '<span class="muted">–</span>'}</div><small>back lights</small></div>
+    </div>
+    <p class="muted" style="font-size:13px;margin-top:10px">Every other day, A → B → C. Missed a day? Just do the next one.</p></section>`;
+}
+function viewActivity(today){
+  const day = state.food[today] || {items:[], walkH:0, hikeH:0, longRun:false};
+  const t = foodTargets(day), extra = t.kcal - FOOD_BASE.kcal;
+  return `<section class="card"><div class="spread"><h3>Extra activity today</h3>${extra ? `<span class="pill green">+${extra} kcal</span>` : ''}</div>
+    <p class="muted" style="font-size:13px">Daily 30-min walks are already in the base. These raise today's food target${extra ? ` to <b>${t.kcal.toLocaleString('en-GB')} kcal</b>` : ''}.</p>
+    <div class="grid2" style="margin-top:8px"><div><label for="fw">Walks of 60+ min (hours)</label><input id="fw" inputmode="decimal" data-act="factivity" data-f="walkH" value="${esc(day.walkH || '')}" placeholder="0"></div>
+    <div><label for="fh">Hiking (hours)</label><input id="fh" inputmode="decimal" data-act="factivity" data-f="hikeH" value="${esc(day.hikeH || '')}" placeholder="0"></div></div>
+    <label style="margin-top:10px;display:flex;gap:10px;align-items:center;color:var(--ink)"><input type="checkbox" style="width:22px;min-height:22px;accent-color:var(--accent)" data-act="flongrun" ${day.longRun ? 'checked' : ''}> Ran 35+ min today (+150 kcal)</label></section>`;
+}
 function viewToday(){
   const today = isoToday();
   const p = planFor(today);
   const name = esc(state.settings.name || 'you');
-  let h = '';
+  let h = state.draft ? '' : viewWeek(today);
   // next-morning back check
   const pending = doneSessions().filter(s => s.back && s.back.morning == null && s.date < today).pop();
   if (pending && !state.draft) h += `<section class="card"><p class="eyebrow">Morning check</p><h3>How's your back this morning after Session ${pending.type} (${fmtDate(pending.date)})?</h3><p class="muted">0 = nothing, 10 = worst. Before that session it was ${pending.back.before ?? '–'}.</p>${painSeg('morning:'+pending.id, null)}</section>`;
@@ -599,7 +727,7 @@ function viewToday(){
   const info = SESSION_INFO[type];
   const r = runFor(p);
   const noGym = state.noGymDate === today;
-  const startBtns = `<div class="spread" style="margin-bottom:10px"><small>Where are you training?</small><div class="seg"><button class="small ${noGym?'':'on'}" data-act="nogym" data-val="0" aria-pressed="${!noGym}">Gym</button><button class="small ${noGym?'on':''}" data-act="nogym" data-val="1" aria-pressed="${noGym}">No gym today</button></div></div>
+  const startBtns = `<div class="spread" style="margin-bottom:10px"><small>Where are you training?</small><div class="seg nowrap"><button class="small ${noGym?'':'on'}" data-act="nogym" data-val="0" aria-pressed="${!noGym}">Gym</button><button class="small ${noGym?'on':''}" data-act="nogym" data-val="1" aria-pressed="${noGym}">No gym today</button></div></div>
     ${noGym ? '<p class="muted" style="font-size:13px">No-gym version: bodyweight, bands and a backpack. Pilates is the same.</p>' : ''}
     <button class="primary block" data-act="${noGym ? 'start-ng' : 'start'}" data-type="${type}">Start Session ${type}</button>`;
   const restartNote = p.mode === 'restart' ? `<p class="muted">Welcome home. Rest and walk the first days, then restart: 2 sets, 3 reps left, weights ~10% lighter (the logbook suggests them). Normal weeks continue after this.</p>` : '';
@@ -610,15 +738,7 @@ function viewToday(){
     <div class="row" style="margin-top:8px"><button class="block ghost" data-act="${noGym ? 'start-ng-min' : 'start-min'}" data-type="${type}">Busy day: minimum session (50–60 min)</button></div>
     <div class="spread" style="margin-top:10px"><small>Different session today?</small><div class="seg">${ORDER.map(t => `<button class="small ${t===type?'on':''}" data-act="pick" data-type="${t}">${t}</button>`).join('')}</div></div>
     ${p.over ? '<p class="muted">The 12 weeks are done: re-test, measure, and plan the next block. The logbook keeps going with week-12 settings.</p>' : ''}</section>`;
-  // week summary (calendar week, Mon–Sun)
-  const thisWeek = doneSessions().filter(s => mondayOf(s.date) === mondayOf(today));
-  const lights = thisWeek.map(light);
-  h += `<section class="card"><div class="spread"><h3>This week</h3><span class="muted">${thisWeek.length} session${thisWeek.length===1?'':'s'}</span></div>
-    <div class="grid2" style="margin-top:10px">
-      <div><div class="big-num">${weekRunTotal(today)}</div><small>run min · target ${r.wk}</small></div>
-      <div><div class="row">${lights.length ? lights.map(l => `<span class="light-dot" style="background:var(--${l==='none'?'line':l})" title="${l}"></span>`).join('') : '<span class="muted">–</span>'}</div><small>back lights</small></div>
-    </div>
-    <p class="muted" style="margin-top:10px">Rotation: ${ORDER.map(t => t===type ? `<b>${t}</b>` : t).join(' → ')} → … Missed a day? Just do the next one.</p></section>`;
+  h += viewActivity(today);
   return h;
 }
 // Warnings shown above the next session.
@@ -657,7 +777,7 @@ function viewDraft(){
       <div class="sets"><span class="hdr">Set</span><span class="hdr">${slot.opts[e.variant].eq === 'bw' ? 'kg / band' : 'kg'}</span><span class="hdr">${slot.unit ? 'reps / s' : 'reps'}</span><span></span>
       ${e.sets.map((s, j) => `<span class="n">${j+1}</span>
         <input inputmode="${slot.opts[e.variant].eq === 'bw' ? 'text' : 'decimal'}" aria-label="Set ${j+1} kg" data-act="set" data-i="${i}" data-j="${j}" data-f="kg" value="${esc(s.kg)}" placeholder="${sug.kg ?? ''}">
-        <input inputmode="numeric" aria-label="Set ${j+1} reps" data-act="set" data-i="${i}" data-j="${j}" data-f="reps" value="${esc(s.reps)}" placeholder="${esc(sug.reps)}">
+        <input inputmode="decimal" aria-label="Set ${j+1} reps" data-act="set" data-i="${i}" data-j="${j}" data-f="reps" value="${esc(s.reps)}" placeholder="${esc(sug.reps)}">
         <button class="chk ${s.done?'on':''}" data-act="done" data-i="${i}" data-j="${j}" aria-label="Set ${j+1} done" aria-pressed="${s.done}">✓</button>`).join('')}</div>
       <div class="row" style="margin-top:8px"><button class="small ghost" data-act="addset" data-i="${i}">+ set</button><button class="small ghost" data-act="rmset" data-i="${i}">− set</button></div>
       <label style="margin-top:10px">Reps left in the tank on the last set</label>
@@ -674,15 +794,15 @@ function viewDraft(){
     <div class="seg">${[1,2].map(l => `<button class="${lvl===l?'on':''}" data-act="pillevel" data-val="${l}">L${l}</button>`).join('')}</div></div>
     <ul class="checklist">${idxs.map(k => { const mv = flow.moves[k]; const nm = (lvl === 2 ? mv.l2 : mv.l1)[0];
       return `<li><input type="checkbox" id="p-${k}" aria-label="Done: ${esc(nm)}" data-act="pil" data-k="${k}" ${d.pilates.done.includes(k)?'checked':''}><span style="color:var(--ink);font-weight:500">${flowMove(mv, lvl)}</span></li>`; }).join('')}</ul>
-    <div class="grid2" style="margin-top:8px"><div><label for="pmin">Minutes</label><input id="pmin" inputmode="numeric" data-act="field" data-f="pilates.min" value="${esc(d.pilates.min)}"></div></div>
+    <div class="grid2" style="margin-top:8px"><div><label for="pmin">Minutes</label><input id="pmin" inputmode="decimal" data-act="field" data-f="pilates.min" value="${esc(d.pilates.min)}"></div></div>
     <p class="muted" style="font-size:13px">Neutral spine, ribs down. No roll-ups, twists or crunches. Take the last reps of each move close to tired. ${lvl === 1 && p.w >= 5 ? '<b>From week 5: switch to L2 once Level 1 feels green.</b>' : 'Move to Level 2 (from week 5) once Level 1 feels green.'}</p></section>`;
   // Run
   const r = runFor(p);
   h += `<section class="card block-run"><p class="eyebrow">Run · always after weights</p><h2>${fmtRun(r[d.type])}</h2>
     <p class="muted" style="font-size:13px">Easy = you can talk in full sentences.${d.type==='B' && r.q ? ` Every other B: ${r.q}.` : ''} Week so far: ${weekRunTotal(d.date)} / ${r.wk} min.</p>
     <label for="rkind">Type</label><select id="rkind" data-act="field" data-f="run.kind">${RUN_KINDS.map(k => `<option ${d.run.kind===k?'selected':''}>${k}</option>`).join('')}</select>
-    <div class="grid2" style="margin-top:8px"><div><label for="rmin">Minutes</label><input id="rmin" inputmode="numeric" data-act="field" data-f="run.min" value="${esc(d.run.min)}"></div>
-    <div><label for="rrpe">Effort 1–10</label><input id="rrpe" inputmode="numeric" data-act="field" data-f="run.rpe" value="${esc(d.run.rpe)}"></div></div></section>`;
+    <div class="grid2" style="margin-top:8px"><div><label for="rmin">Minutes</label><input id="rmin" inputmode="decimal" data-act="field" data-f="run.min" value="${esc(d.run.min)}"></div>
+    <div><label for="rrpe">Effort 1–10</label><input id="rrpe" inputmode="decimal" data-act="field" data-f="run.rpe" value="${esc(d.run.rpe)}"></div></div></section>`;
   // Finish
   h += `<section class="card"><h2>Finish</h2><label style="margin-top:10px">Back pain right after (0–10)</label>${painSeg('after', d.back.after)}
     <p style="margin-top:10px">${LIGHT_TXT[light(d)]}</p>
@@ -691,7 +811,7 @@ function viewDraft(){
   return h;
 }
 let foodDate = null; // date shown on the Food tab (null = today)
-function foodDay(date){ return state.food[date] || (state.food[date] = {items:[], vitD:false, walkH:0, hikeH:0, longRun:false}); }
+function foodDay(date){ return state.food[date] || (state.food[date] = {items:[], walkH:0, hikeH:0, longRun:false}); }
 function foodTargets(day){
   const kcal = FOOD_BASE.kcal + Math.round((num(day.walkH) || 0) * 150) + Math.round((num(day.hikeH) || 0) * 250) + (day.longRun ? 150 : 0);
   return {kcal, protein: FOOD_BASE.protein + ((num(day.hikeH) || 0) > 0 ? 10 : 0)};
@@ -702,28 +822,29 @@ function bar(val, target, color){
 }
 function viewFood(){
   const date = foodDate || isoToday();
-  const day = state.food[date] || {items:[], vitD:false, walkH:0, hikeH:0, longRun:false};
+  const day = state.food[date] || {items:[], walkH:0, hikeH:0, longRun:false};
   const t = foodTargets(day);
-  const kcal = day.items.reduce((a, x) => a + x.kcal, 0), prot = day.items.reduce((a, x) => a + x.p, 0);
+  const kcal = Math.round(day.items.reduce((a, x) => a + x.kcal, 0)), prot = r1(day.items.reduce((a, x) => a + x.p, 0));
+  const extra = t.kcal - FOOD_BASE.kcal;
+  const meals = sortedMeals(), shown = mealsAll ? meals : meals.slice(0, 12);
   const week = Array.from({length:7}, (_, k) => state.food[addDays(date, -(k + (date === isoToday() ? 1 : 0)))]).filter(x => x && x.items.length);
   const avg = (f) => week.length ? Math.round(week.reduce((a, x) => a + x.items.reduce((b, y) => b + y[f], 0), 0) / week.length) : '–';
   const isToday = date === isoToday();
-  const month = +date.slice(5, 7);
   return `<h1>Food</h1><p class="muted">Eat to keep your weight (≈ ${FOOD_BASE.kcal.toLocaleString('en-GB')} kcal) with plenty of protein. You are not dieting.</p>
   <section class="card hero"><div class="spread"><button class="small ghost" data-act="fday" data-val="-1" aria-label="Previous day">‹</button><p class="eyebrow">${isToday ? 'Today' : fmtDate(date)}</p><button class="small ghost" data-act="fday" data-val="1" aria-label="Next day" ${isToday ? 'disabled' : ''}>›</button></div>
     <div class="grid2" style="margin-top:6px"><div><div class="big-num">${kcal.toLocaleString('en-GB')}</div><small>of ${t.kcal.toLocaleString('en-GB')} kcal</small>${bar(kcal, t.kcal, 'accent')}</div>
     <div><div class="big-num">${prot} g</div><small>of ${t.protein} g protein</small>${bar(prot, t.protein, 'green')}</div></div>
     ${prot < t.protein && kcal > t.kcal * 0.6 ? `<p class="muted" style="margin-top:6px">Protein is behind: skyr, eggs, fish or a protein shake close the gap.</p>` : ''}
-    ${(month >= 10 || month <= 4) ? `<label style="margin-top:10px;display:flex;gap:10px;align-items:center;color:var(--ink)"><input type="checkbox" style="width:22px;min-height:22px" data-act="vitd" ${day.vitD ? 'checked' : ''}> Vitamin D3 (20 µg) taken</label>` : ''}</section>
-  <section class="card"><h3>Extra activity today</h3><p class="muted" style="font-size:13px">Daily 30-min walks are already in the base. These add to today's target.</p>
-    <div class="grid2" style="margin-top:8px"><div><label for="fw">Walks of 60+ min (hours)</label><input id="fw" inputmode="decimal" data-act="factivity" data-f="walkH" value="${esc(day.walkH || '')}" placeholder="0"></div>
-    <div><label for="fh">Hiking (hours)</label><input id="fh" inputmode="decimal" data-act="factivity" data-f="hikeH" value="${esc(day.hikeH || '')}" placeholder="0"></div></div>
-    <label style="margin-top:10px;display:flex;gap:10px;align-items:center;color:var(--ink)"><input type="checkbox" style="width:22px;min-height:22px" data-act="flongrun" ${day.longRun ? 'checked' : ''}> Ran 35+ min today (+150 kcal)</label></section>
-  <section class="card"><h3>What you ate</h3>${day.items.length ? `<ul class="checklist">${day.items.map((x, k) => `<li style="align-items:center"><span style="flex:1">${esc(x.n)}<br><small>${x.kcal} kcal · ${x.p} g protein</small></span><button class="small ghost" data-act="fdel" data-k="${k}" aria-label="Remove ${esc(x.n)}">✕</button></li>`).join('')}</ul>` : '<p class="muted">Nothing logged yet. Tap what you ate below.</p>'}</section>
-  ${FOOD_ITEMS.map(([g, items], gi) => `<details class="card flat" ${gi < 3 ? 'open' : ''}><summary><h3>${esc(g)}</h3></summary><div class="row wrap" style="margin-top:8px">${items.map(([n, k, p], ii) => `<button class="small" data-act="fadd" data-g="${gi}" data-i="${ii}">${esc(n)}<br><small class="muted">${k} kcal · ${p} g</small></button>`).join('')}</div></details>`).join('')}
-  <section class="card"><h3>Something else</h3><p class="muted" style="font-size:13px">Use the packaging or any food app for the numbers.</p>
-    <label for="cn" style="margin-top:8px">What</label><input id="cn" placeholder="e.g. Pizza slice">
-    <div class="grid2" style="margin-top:8px"><div><label for="ck">kcal</label><input id="ck" inputmode="numeric"></div><div><label for="cp">Protein (g)</label><input id="cp" inputmode="numeric"></div></div>
+    <p class="muted" style="font-size:13px;margin-top:8px">${extra ? `Includes +${extra} kcal for extra activity.` : 'Long walk or hike today? Log it on the Today tab.'}</p></section>
+  <section class="card"><div class="spread"><h3>Your meals</h3>${meals.length ? `<button class="small ghost" data-act="medit">${mealEdit ? 'Done' : 'Edit'}</button>` : ''}</div>
+    ${meals.length ? `<p class="muted" style="font-size:13px">${mealEdit ? 'Tap a meal to remove it from this list. Your log is not changed.' : 'One tap adds it to the day. Most eaten first.'}</p>
+    <div class="meals">${shown.map(x => `<button class="meal ${mealEdit ? 'del' : ''}" data-act="${mealEdit ? 'mdel' : 'madd'}" data-id="${esc(x.id)}"><b>${esc(x.n)}</b><small class="muted">${r1(x.kcal)} kcal · ${r1(x.p)} g protein${x.c > 1 ? ` · ${x.c}×` : ''}</small></button>`).join('')}</div>
+    ${meals.length > 12 ? `<button class="small ghost block" style="margin-top:8px" data-act="mall">${mealsAll ? 'Show fewer' : `Show all ${meals.length}`}</button>` : ''}`
+    : '<p class="muted" style="font-size:14px">Meals you add below show up here, so next time it is one tap.</p>'}</section>
+  <section class="card"><h3>What you ate</h3>${day.items.length ? `<ul class="checklist">${day.items.map((x, k) => `<li style="align-items:center"><span style="flex:1">${esc(x.n)}<br><small>${r1(x.kcal)} kcal · ${r1(x.p)} g protein</small></span><button class="small ghost" data-act="fdel" data-k="${k}" aria-label="Remove ${esc(x.n)}">✕</button></li>`).join('')}</ul>` : '<p class="muted">Nothing logged yet. Tap one of your meals above, or add a new one below.</p>'}</section>
+  <section class="card"><h3>Add a new meal</h3><p class="muted" style="font-size:13px">Use the packaging or any food app for the numbers. Decimals are fine (e.g. 12.5). It is saved to Your meals.</p>
+    <label for="cn" style="margin-top:8px">What</label><input id="cn" placeholder="e.g. Overnight oats" autocomplete="off">
+    <div class="grid2" style="margin-top:8px"><div><label for="ck">kcal</label><input id="ck" inputmode="decimal"></div><div><label for="cp">Protein (g)</label><input id="cp" inputmode="decimal"></div></div>
     <button class="block" style="margin-top:10px" data-act="fcustom">Add</button></section>
   <section class="card"><h3>Last 7 days</h3><div class="grid2" style="margin-top:8px"><div><div class="big-num">${avg('kcal')}</div><small>avg kcal/day, ${date === isoToday() ? 'last 7 days before today' : '7 days'} (${week.length} logged)</small></div><div><div class="big-num">${avg('p')}${week.length ? ' g' : ''}</div><small>avg protein/day</small></div></div></section>
   <details class="card flat"><summary><h3>When to eat</h3></summary><table style="margin-top:8px"><tbody>
@@ -812,7 +933,7 @@ function viewSettings(){
   <button class="block" data-act="csv">Export sets as spreadsheet (.csv)</button>
   <label class="btn" style="display:flex;justify-content:center;align-items:center;color:var(--ink);font-size:16px;margin:8px 0 0">Import backup<input type="file" accept="application/json,.json" data-act="import" style="display:none"></label></div></section>
   <section class="card flat"><h3>Danger zone</h3><button class="block ghost danger" style="margin-top:8px" data-act="reset">Delete all data</button></section>
-  <p class="muted" style="font-size:13px">Halumi Logbook · program v1 · 9 Nov 2026</p>`;
+  <p class="muted" style="font-size:13px">Halumi Logbook · program v1 · 9 Nov 2026 · app update 23 Nov 2026</p>`;
 }
 
 /* ---------- Events ---------- */
@@ -838,15 +959,22 @@ document.addEventListener('click', (ev) => {
   const b = ev.target.closest('[data-act]'); if (!b) return;
   const act = b.dataset.act, d = state.draft, i = +b.dataset.i, j = +b.dataset.j;
   switch (act) {
-    case 'tab': tab = b.dataset.tab; foodDate = null; render(); window.scrollTo(0,0); return;
+    case 'tab': tab = b.dataset.tab; foodDate = null; calOff = 0; calSel = null; mealEdit = false; render(); window.scrollTo(0,0); return;
     case 'pick': pick = b.dataset.type === nextType() ? null : b.dataset.type; render(); return;
     case 'fday': { const cur = foodDate || isoToday(); const nx = addDays(cur, +b.dataset.val); foodDate = nx >= isoToday() ? null : nx; render(); return; }
-    case 'fadd': { const [n, k, p] = FOOD_ITEMS[+b.dataset.g][1][+b.dataset.i]; foodDay(foodDate || isoToday()).items.push({n, kcal:k, p}); toast(`Added: ${n}`); break; }
+    case 'madd': { const m0 = state.meals.find(x => x.id === b.dataset.id); if (!m0) return; const dt = foodDate || isoToday();
+      foodDay(dt).items.push({n:m0.n, kcal:m0.kcal, p:m0.p}); m0.c++; if (!m0.last || dt > m0.last) m0.last = dt; toast(`Added: ${m0.n}`); break; }
+    case 'mdel': { const m0 = state.meals.find(x => x.id === b.dataset.id); if (!m0) return; state.meals = state.meals.filter(x => x !== m0); if (!state.meals.length) mealEdit = false; toast(`Removed: ${m0.n}`); break; }
+    case 'medit': mealEdit = !mealEdit; render(); return;
+    case 'mall': mealsAll = !mealsAll; render(); return;
+    case 'calday': calSel = b.dataset.date; render(); return;
+    case 'calwk': calOff += +b.dataset.val; calSel = null; render(); return;
     case 'fdel': foodDay(foodDate || isoToday()).items.splice(+b.dataset.k, 1); break;
     case 'fcustom': {
-      const n = ($('#cn').value || '').trim() || 'Food', k = Math.round(num($('#ck').value) ?? NaN), p = Math.round(num($('#cp').value) ?? 0);
+      const n = (($('#cn').value || '').trim() || 'Food').slice(0, 60), k = r1(num($('#ck').value) ?? NaN), p = r1(num($('#cp').value) ?? 0);
       if (!Number.isFinite(k) || k < 0 || k > 5000 || p < 0 || p > 300) { toast('Type the kcal (and protein) first'); return; }
-      foodDay(foodDate || isoToday()).items.push({n: n.slice(0, 60), kcal:k, p}); toast(`Added: ${n}`); break;
+      const dt = foodDate || isoToday();
+      foodDay(dt).items.push({n, kcal:k, p}); upsertMeal(n, k, p, dt); toast(`Added and saved: ${n}`); break;
     }
     case 'nogym': state.noGymDate = b.dataset.val === '1' ? isoToday() : null; break;
     case 'start': startSession(b.dataset.type, false); return;
@@ -895,9 +1023,9 @@ document.addEventListener('click', (ev) => {
 document.addEventListener('input', (ev) => {
   const el = ev.target, act = el.dataset.act; if (!act) return;
   const d = state.draft;
-  if (act === 'set') d.ex[+el.dataset.i].sets[+el.dataset.j][el.dataset.f] = el.value.trim();
-  else if (act === 'field' && el.tagName !== 'SELECT') setPath(d, el.dataset.f, el.value);
-  else if (act === 'body') { const v = el.value.trim(); bodyEntry()[el.dataset.f] = v === '' ? null : v; }
+  if (act === 'set') d.ex[+el.dataset.i].sets[+el.dataset.j][el.dataset.f] = normDec(el.value);
+  else if (act === 'field' && el.tagName !== 'SELECT') setPath(d, el.dataset.f, el.dataset.f === 'note' ? el.value : normDec(el.value));
+  else if (act === 'body') { const v = normDec(el.value); bodyEntry()[el.dataset.f] = v === '' ? null : v; }
   else if (act === 'setting' && el.type !== 'date') state.settings[el.dataset.f] = el.value;
   else return;
   save();
@@ -909,7 +1037,6 @@ document.addEventListener('change', (ev) => {
   else if (act === 'field' && el.tagName === 'SELECT') setPath(d, el.dataset.f, el.value);
   else if (act === 'pil') { const k = +el.dataset.k; d.pilates.done = el.checked ? [...new Set([...d.pilates.done, k])] : d.pilates.done.filter(x => x !== k); save(); return; }
   else if (act === 'period') { bodyEntry().period = el.checked; }
-  else if (act === 'vitd') { foodDay(foodDate || isoToday()).vitD = el.checked; save(); return; }
   else if (act === 'flongrun') { foodDay(foodDate || isoToday()).longRun = el.checked; }
   else if (act === 'factivity') { const v = num(el.value); if (el.value.trim() && (v === null || v < 0 || v > 12)) { toast('Enter hours, e.g. 1.5'); el.value = ''; return; } foodDay(foodDate || isoToday())[el.dataset.f] = v || 0; }
   else if (act === 'setting' && el.type === 'date') { const f = el.dataset.f; if (/^\d{4}-\d{2}-\d{2}$/.test(el.value)) state.settings[f] = el.value; else if (f !== 'start' && el.value === '') state.settings[f] = ''; }
