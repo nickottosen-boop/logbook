@@ -338,6 +338,14 @@ button[disabled]{opacity:.45}
 body.sheet-open{overflow:hidden}
 @keyframes up{from{transform:translateY(100%)}to{transform:none}}
 @keyframes fade{from{opacity:0}to{opacity:1}}
+
+/* Grams stepper */
+.gram-row{display:flex;align-items:center;gap:6px;margin:8px 0 4px}
+.gram-row>button{width:44px;min-width:44px;height:40px;min-height:40px;padding:0;border-radius:12px;font-size:20px;font-weight:600;line-height:1}
+.gram-in{position:relative;display:block;width:110px;margin:0;color:var(--ink)}
+.gram-row.wide .gram-in{flex:1;width:auto}
+.gram-in input{height:40px;min-height:40px;padding:0 30px 0 12px;text-align:right;font-size:17px;font-weight:650}
+.gram-in span{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:15px;pointer-events:none}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -615,14 +623,14 @@ function buildMeals(food){
     const m0 = map.get(k) || {id:uid(), n:x.n, kcal:x.kcal, p:x.p, c:0, last:date}; m0.c++; m0.last = date; m0.kcal = x.kcal; m0.p = x.p; m0.cb = x.cb; m0.ft = x.ft; map.set(k, m0); }));
   return [...map.values()];
 }
-function upsertMeal(n, kcal, p, date, cb, ft){
+function upsertMeal(n, kcal, p, date, cb, ft, g){
   let m0 = state.meals.find(x => mealKey(x.n) === mealKey(n));
   if (!m0) { m0 = {id:uid(), n, kcal, p, c:0, last:date}; state.meals.push(m0); }
-  m0.n = n; m0.kcal = kcal; m0.p = p; m0.cb = cb; m0.ft = ft; m0.c++; if (!m0.last || date > m0.last) m0.last = date;
+  m0.n = n; m0.kcal = kcal; m0.p = p; m0.cb = cb; m0.ft = ft; if (Number.isFinite(g)) m0.g = g; m0.c++; if (!m0.last || date > m0.last) m0.last = date;
 }
 // "430 kcal · 30 g protein · 52 g carbs · 12 g fat" (carbs/fat only when known)
-const macroLine = (x) => `${r1(x.kcal)} kcal · ${r1(x.p)} g protein${Number.isFinite(x.cb) ? ` · ${r1(x.cb)} g carbs` : ''}${Number.isFinite(x.ft) ? ` · ${r1(x.ft)} g fat` : ''}`;
-const foodItem = (n, kcal, p, cb, ft) => { const it = {n, kcal, p}; if (Number.isFinite(cb)) it.cb = cb; if (Number.isFinite(ft)) it.ft = ft; return it; };
+const macroLine = (x) => `${Number.isFinite(x.g) ? `${r1(x.g)} g · ` : ''}${r1(x.kcal)} kcal · ${r1(x.p)} g protein${Number.isFinite(x.cb) ? ` · ${r1(x.cb)} g carbs` : ''}${Number.isFinite(x.ft) ? ` · ${r1(x.ft)} g fat` : ''}`;
+const foodItem = (n, kcal, p, cb, ft, g) => { const it = {n, kcal, p}; if (Number.isFinite(cb)) it.cb = cb; if (Number.isFinite(ft)) it.ft = ft; if (Number.isFinite(g) && g > 0) it.g = g; return it; };
 const sortedMeals = () => state.meals.slice().sort((a, b) => b.c - a.c || String(b.last).localeCompare(String(a.last)) || a.n.localeCompare(b.n));
 let loadWarning = false;
 let state = load();
@@ -1146,17 +1154,30 @@ function viewScan(){
     const its = scan.items, on = its.filter(x => x.on);
     const tot = (f) => r1(on.reduce((a, x) => a + (num(x[f]) || 0), 0));
     return `<section class="card scan"><div class="spread"><h3>Found ${its.length} item${its.length === 1 ? '' : 's'}</h3><button class="small ghost" data-act="scanedit">${scan.edit ? 'Done' : 'Edit'}</button></div>
-      ${scan.note ? `<p class="muted" style="font-size:13px">${esc(scan.note)}</p>` : ''}
+      <p class="muted" style="font-size:13px">Change the grams to what you actually ate. The numbers follow.${scan.note ? ' ' + esc(scan.note) : ''}</p>
       <ul class="scan-list">${its.map((x, k) => `<li class="${x.on ? '' : 'off'}"><input type="checkbox" aria-label="Include ${esc(x.n)}" data-act="scanon" data-k="${k}" ${x.on ? 'checked' : ''}>
         <div style="flex:1;min-width:0">${scan.edit ? `<input class="scan-name" data-act="scanf" data-k="${k}" data-f="n" value="${esc(x.n)}">` : `<b>${esc(x.n)}</b>${x.amt ? `<small class="muted"> · ${esc(x.amt)}</small>` : ''}`}
+        <div class="gram-row"><button type="button" data-act="gstep" data-k="${k}" data-d="-10" aria-label="10 g less">−</button><label class="gram-in"><input inputmode="decimal" aria-label="Grams of ${esc(x.n)}" data-act="gram" data-k="${k}" value="${esc(x.g ?? '')}" placeholder="?"><span>g</span></label><button type="button" data-act="gstep" data-k="${k}" data-d="10" aria-label="10 g more">+</button></div>
         ${scan.edit ? `<div class="grid4">${[['kcal','kcal'],['p','protein'],['cb','carbs'],['ft','fat']].map(([f, l]) => `<div><label>${l}</label><input inputmode="decimal" data-act="scanf" data-k="${k}" data-f="${f}" value="${esc(x[f] ?? '')}"></div>`).join('')}</div>`
-          : `<small class="muted" style="display:block">${macroLine({kcal:num(x.kcal) || 0, p:num(x.p) || 0, cb:num(x.cb), ft:num(x.ft)})}</small>`}</div></li>`).join('')}</ul>
+          : `<small class="muted" style="display:block" id="sm-${k}">${scanLine(x)}</small>`}</div></li>`).join('')}</ul>
       <div class="scan-total"><b>${Math.round(tot('kcal'))} kcal</b><span>${tot('p')} g protein · ${tot('cb')} g carbs · ${tot('ft')} g fat</span></div>
       <button class="primary block" style="margin-top:12px" data-act="scanadd" ${on.length ? '' : 'disabled'}>Add to ${foodDate && foodDate !== isoToday() ? fmtDate(foodDate) : 'today'}</button>
       <button class="ghost block" style="margin-top:8px" data-act="scancancel">Cancel</button></section>`;
   }
   return `<section class="card scan">${picker}<p class="muted" style="font-size:13px;margin-top:10px;text-align:center">A screenshot, nutrition label or photo of your plate. You check it before it's added.</p>
     <div class="inline-add" style="margin-top:6px"><div><label for="scantext">Or type what you ate</label><input id="scantext" placeholder="e.g. 200 g skyr and a banana" autocomplete="off" enterkeyhint="send"></div><button data-act="scantext">Go</button></div></section>`;
+}
+
+// Scanned items keep their values per gram, so changing the amount rescales kcal and macros.
+function setPer(x){ const g = num(x.g); x.per = g > 0 ? {kcal:(num(x.kcal) || 0) / g, p:(num(x.p) || 0) / g, cb:(num(x.cb) || 0) / g, ft:(num(x.ft) || 0) / g} : null; }
+function scaleItem(x){ const g = num(x.g); if (!x.per || !(g >= 0)) return; x.kcal = Math.round(x.per.kcal * g); x.p = r1(x.per.p * g); x.cb = r1(x.per.cb * g); x.ft = r1(x.per.ft * g); }
+const scanLine = (x) => macroLine({kcal:num(x.kcal) || 0, p:num(x.p) || 0, cb:num(x.cb), ft:num(x.ft)});
+function updateScanTotals(){
+  const tt = document.querySelector('.scan-total'); if (!tt) return;
+  const on = scan.items.filter(x => x.on), tot = (f) => r1(on.reduce((a, x) => a + (num(x[f]) || 0), 0));
+  tt.innerHTML = `<b>${Math.round(tot('kcal'))} kcal</b><span>${tot('p')} g protein · ${tot('cb')} g carbs · ${tot('ft')} g fat</span>`;
+  scan.items.forEach((x, k) => { const l = document.getElementById('sm-' + k); if (l) l.textContent = scanLine(x);
+    if (scan.edit) ['kcal','p','cb','ft'].forEach(f => { const i = document.querySelector(`[data-act=scanf][data-k="${k}"][data-f="${f}"]`); if (i && document.activeElement !== i) i.value = x[f] ?? ''; }); });
 }
 // Shrink the picture before sending: faster upload, fewer tokens. Long edge 1568 px is the most Claude uses anyway.
 function shrinkImage(file, max = 1568){
@@ -1181,7 +1202,7 @@ async function runScan(payload, thumb){
     const out = await res.json().catch(() => ({}));
     if (res.status === 401) throw new Error('Wrong passcode. Check it in Settings.');
     if (!res.ok) throw new Error(out.error || `The scanner answered with an error (${res.status}). Try again.`);
-    const items = (out.items || []).filter(x => x && x.name).map(x => ({on:true, n:String(x.name).slice(0, 60), amt:x.amount || '', kcal:r1(+x.kcal || 0), p:r1(+x.protein_g || 0), cb:r1(+x.carbs_g || 0), ft:r1(+x.fat_g || 0)}));
+    const items = (out.items || []).filter(x => x && x.name).map(x => { const it = {on:true, n:String(x.name).slice(0, 60), amt:x.amount || '', g: +x.grams > 0 ? r1(+x.grams) : null, kcal:Math.round(+x.kcal || 0), p:r1(+x.protein_g || 0), cb:r1(+x.carbs_g || 0), ft:r1(+x.fat_g || 0)}; setPer(it); return it; });
     if (!items.length) throw new Error(out.note || 'No food found in that picture. Try a clearer screenshot, or type it.');
     scan = {status:'done', items, note:out.note || '', edit:false};
   } catch (e) {
@@ -1203,7 +1224,7 @@ document.addEventListener('paste', (ev) => {
 
 
 /* ---------- Edit sheet: a logged food or a saved meal ---------- */
-let editing = null; // {kind:'item', date, k} | {kind:'meal', id}
+let editing = null, sheetBase = null; // {kind:'item', date, k} | {kind:'meal', id}
 function editTarget(){
   if (!editing) return null;
   if (editing.kind === 'item') { const d = state.food[editing.date]; return d && d.items[editing.k] || null; }
@@ -1215,11 +1236,14 @@ function renderSheet(){
   if (!x) { if (editing) editing = null; el.innerHTML = ''; document.body.classList.remove('sheet-open'); return; }
   const item = editing.kind === 'item';
   const sameMeal = item && state.meals.find(m => mealKey(m.n) === mealKey(x.n));
+  sheetBase = {g:num(x.g), kcal:num(x.kcal), p:num(x.p), cb:num(x.cb), ft:num(x.ft)};
   const f = (id, label, v, extra = '') => `<div><label for="${id}">${label}</label><input id="${id}" inputmode="decimal" value="${esc(v ?? '')}" ${extra}></div>`;
   el.innerHTML = `<div class="sheet-bg" data-act="eclose"></div>
     <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-t"><div class="grabber"></div>
       <div class="spread"><button class="small ghost" data-act="eclose">Cancel</button><h3 id="sheet-t">${item ? 'Edit food' : 'Edit saved meal'}</h3><button class="small ghost sheet-save" data-act="esave">Save</button></div>
       <label for="e-n" style="margin-top:14px">Name</label><input id="e-n" value="${esc(x.n)}" autocomplete="off" maxlength="60">
+      <label for="e-g" style="margin-top:10px">Amount (g)</label><div class="gram-row wide"><button type="button" data-act="esgstep" data-d="-10" aria-label="10 g less">−</button><label class="gram-in"><input id="e-g" inputmode="decimal" data-act="sgram" value="${esc(x.g ?? '')}" placeholder="optional"><span>g</span></label><button type="button" data-act="esgstep" data-d="10" aria-label="10 g more">+</button></div>
+      ${Number.isFinite(x.g) ? '<p class="muted" style="font-size:13px;margin-top:4px">Change the grams and kcal, protein, carbs and fat follow.</p>' : ''}
       <div class="grid2" style="margin-top:10px">${f('e-k', 'kcal', x.kcal)}${f('e-p', 'Protein (g)', x.p)}</div>
       <div class="grid2" style="margin-top:10px">${f('e-cb', 'Carbs (g)', x.cb, 'placeholder="–"')}${f('e-ft', 'Fat (g)', x.ft, 'placeholder="–"')}</div>
       ${item && sameMeal ? `<label class="check-row"><input type="checkbox" id="e-sync" checked> Also update it in Your meals</label>` : ''}
@@ -1229,16 +1253,23 @@ function renderSheet(){
     </div>`;
   document.body.classList.add('sheet-open');
 }
+
+// In the edit sheet: new grams → scale kcal and macros from what they were when the sheet opened.
+function sheetRescale(){
+  const g = num($('#e-g').value), b = sheetBase; if (!b || !(b.g > 0) || g === null || g < 0) return;
+  const k = g / b.g, put = (id, v, round) => { const i = $(id); if (i && v !== null) i.value = round ? Math.round(v * k) : r1(v * k); };
+  put('#e-k', b.kcal, true); put('#e-p', b.p); put('#e-cb', b.cb); put('#e-ft', b.ft);
+}
 function saveEdit(){
   const x = editTarget(); if (!x) return;
   const n = ($('#e-n').value || '').trim().slice(0, 60), k = num($('#e-k').value), p = num($('#e-p').value);
-  const cb = num($('#e-cb').value), ft = num($('#e-ft').value);
+  const cb = num($('#e-cb').value), ft = num($('#e-ft').value), g = num($('#e-g').value);
   if (!n) { toast('Give it a name'); return; }
   if (k === null || k < 0 || k > 5000) { toast('Type the kcal'); return; }
   if ([p, cb, ft].some(v => v !== null && (v < 0 || v > 500))) { toast('Check the grams'); return; }
   const sync = editing.kind === 'item' && $('#e-sync') && $('#e-sync').checked ? state.meals.find(m => mealKey(m.n) === mealKey(x.n)) : null;
   [x, sync].filter(Boolean).forEach(o => { o.n = n; o.kcal = r1(k); o.p = r1(p ?? 0);
-    if (cb === null) delete o.cb; else o.cb = r1(cb); if (ft === null) delete o.ft; else o.ft = r1(ft); });
+    if (cb === null) delete o.cb; else o.cb = r1(cb); if (ft === null) delete o.ft; else o.ft = r1(ft); if (g === null || g <= 0) delete o.g; else o.g = r1(g); });
   editing = null; save(); render(); toast('Saved');
 }
 
@@ -1272,7 +1303,7 @@ document.addEventListener('click', (ev) => {
     case 'pick': pick = b.dataset.type === nextType() ? null : b.dataset.type; render(); return;
     case 'fday': { const cur = foodDate || isoToday(); const nx = addDays(cur, +b.dataset.val); foodDate = nx >= isoToday() ? null : nx; render(); return; }
     case 'madd': { const m0 = state.meals.find(x => x.id === b.dataset.id); if (!m0) return; const dt = foodDate || isoToday();
-      foodDay(dt).items.push(foodItem(m0.n, m0.kcal, m0.p, m0.cb, m0.ft)); m0.c++; if (!m0.last || dt > m0.last) m0.last = dt; toast(`Added: ${m0.n}`); break; }
+      foodDay(dt).items.push(foodItem(m0.n, m0.kcal, m0.p, m0.cb, m0.ft, m0.g)); m0.c++; if (!m0.last || dt > m0.last) m0.last = dt; toast(`Added: ${m0.n}`); break; }
     case 'mdel': { const m0 = state.meals.find(x => x.id === b.dataset.id); if (!m0) return; state.meals = state.meals.filter(x => x !== m0); if (!state.meals.length) mealEdit = false; toast(`Removed: ${m0.n}`); break; }
     case 'medit': mealEdit = !mealEdit; render(); return;
     case 'mall': mealsAll = !mealsAll; render(); return;
@@ -1281,15 +1312,17 @@ document.addEventListener('click', (ev) => {
     case 'calwk': calOff += +b.dataset.val; calSel = null; render(); return;
     case 'scantext': { const v = ($('#scantext').value || '').trim(); if (!v) { toast('Type what you ate first'); return; } runScan({text:v.slice(0, 500)}, null); return; }
     case 'scancancel': scan = {status:'idle'}; render(); return;
+    case 'gstep': { const x = scan.items[+b.dataset.k]; const g = Math.max(0, Math.round(((num(x.g) || 0) + +b.dataset.d) / 5) * 5); x.g = g; if (!x.per) { toast('Type the grams it was for first'); return; } scaleItem(x); const i = document.querySelector(`[data-act=gram][data-k="${b.dataset.k}"]`); if (i) i.value = g; updateScanTotals(); return; }
     case 'scanedit': scan.edit = !scan.edit; render(); return;
     case 'scanadd': { const dt = foodDate || isoToday(); const on = scan.items.filter(x => x.on);
-      on.forEach(x => { const it = foodItem((x.n || 'Food').trim() || 'Food', r1(num(x.kcal) || 0), r1(num(x.p) || 0), num(x.cb) ?? undefined, num(x.ft) ?? undefined);
-        foodDay(dt).items.push(it); upsertMeal(it.n, it.kcal, it.p, dt, it.cb, it.ft); });
+      on.forEach(x => { const it = foodItem((x.n || 'Food').trim() || 'Food', r1(num(x.kcal) || 0), r1(num(x.p) || 0), num(x.cb) ?? undefined, num(x.ft) ?? undefined, num(x.g) ?? undefined);
+        foodDay(dt).items.push(it); upsertMeal(it.n, it.kcal, it.p, dt, it.cb, it.ft, it.g); });
       scan = {status:'idle'}; toast(on.length === 1 ? `Added: ${on[0].n}` : `Added ${on.length} items`); break; }
     case 'iedit': editing = {kind:'item', date:foodDate || isoToday(), k:+b.dataset.k}; renderSheet(); setTimeout(() => { const i = $('#e-k'); if (i && !matchMedia('(pointer:coarse)').matches) i.focus(); }, 50); return;
     case 'mopen': editing = {kind:'meal', id:b.dataset.id}; renderSheet(); return;
     case 'eclose': editing = null; renderSheet(); return;
     case 'esave': saveEdit(); return;
+    case 'esgstep': { const i = $('#e-g'); const g = Math.max(0, Math.round(((num(i.value) || 0) + +b.dataset.d) / 5) * 5); i.value = g; sheetRescale(); return; }
     case 'edel': { const x = editTarget(); if (!x) return;
       if (editing.kind === 'item') { state.food[editing.date].items.splice(editing.k, 1); toast(`Deleted: ${x.n}`); }
       else { state.meals = state.meals.filter(m => m !== x); if (!state.meals.length) mealEdit = false; toast(`Removed: ${x.n}`); }
@@ -1355,7 +1388,9 @@ document.addEventListener('input', (ev) => {
   else if (act === 'field' && el.tagName !== 'SELECT') setPath(d, el.dataset.f, el.dataset.f === 'note' ? el.value : normDec(el.value));
   else if (act === 'body') { const v = normDec(el.value); bodyEntry()[el.dataset.f] = v === '' ? null : v; }
   else if (act === 'setting' && el.type !== 'date') state.settings[el.dataset.f] = el.dataset.f === 'scanCode' ? el.value.trim() : el.value;
-  else if (act === 'scanf') { scan.items[+el.dataset.k][el.dataset.f] = el.dataset.f === 'n' ? el.value : normDec(el.value); const tt = document.querySelector('.scan-total'); if (tt) { const on = scan.items.filter(x => x.on); const tot = (f) => r1(on.reduce((a, x) => a + (num(x[f]) || 0), 0)); tt.innerHTML = `<b>${Math.round(tot('kcal'))} kcal</b><span>${tot('p')} g protein · ${tot('cb')} g carbs · ${tot('ft')} g fat</span>`; } return; }
+  else if (act === 'scanf') { const x = scan.items[+el.dataset.k]; x[el.dataset.f] = el.dataset.f === 'n' ? el.value : normDec(el.value); if (el.dataset.f !== 'n') setPer(x); updateScanTotals(); return; }
+  else if (act === 'sgram') { sheetRescale(); return; }
+  else if (act === 'gram') { const x = scan.items[+el.dataset.k]; const v = normDec(el.value); x.g = v === '' ? null : v; if (x.per) scaleItem(x); else setPer(x); updateScanTotals(); return; }
   else return;
   save();
 });
